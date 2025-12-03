@@ -69,7 +69,7 @@ export function maybeTrack(options?: {
   [key: string]: any;
 }): MethodDecorator {
   return (
-    target: any,
+    _target: any,
     propertyKey: string | symbol,
     descriptor: PropertyDescriptor
   ) => {
