@@ -39,3 +39,16 @@ export {
   REFLECTOR_PROMPT,
   CURATOR_PROMPT,
 } from './prompts.js';
+
+// Adaptation
+export {
+  OfflineAdapter,
+  OnlineAdapter,
+  TaskEnvironment,
+  SimpleEnvironment,
+} from './adaptation.js';
+export type {
+  Sample,
+  EnvironmentResult,
+  AdapterStepResult,
+} from './adaptation.js';
