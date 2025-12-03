@@ -85,7 +85,7 @@ export class FiNERProcessor {
 
         yield {
           question: `Identify named entities in the following financial text:\n\n${sentenceText}`,
-          ground_truth: this.formatEntitiesAsString(entities),
+          groundTruth: this.formatEntitiesAsString(entities),
         };
 
         sampleId++;
@@ -146,7 +146,7 @@ export class FiNERProcessor {
     let currentEntity: Record<string, any> | null = null;
 
     for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
+      // const token = tokens[i]; // Token retrieved via indices later
       const label = labels[i];
 
       if (label.startsWith("B-")) {
@@ -276,7 +276,7 @@ export class XBRLMathProcessor {
       yield {
         question: sampleData.question || "",
         context: sampleData.context || "",
-        ground_truth: String(sampleData.answer || ""),
+        groundTruth: String(sampleData.answer || ""),
       };
       sampleId++;
     }
@@ -297,7 +297,7 @@ export class AppWorldProcessor {
       yield {
         question: taskData.instruction,
         context: `Available APIs: ${taskData.api_docs}`,
-        ground_truth: "Task completion successful",
+        groundTruth: "Task completion successful",
       };
     }
   }

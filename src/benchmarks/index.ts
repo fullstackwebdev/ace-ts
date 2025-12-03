@@ -25,14 +25,13 @@
 
 // Base classes and interfaces
 export {
-  BenchmarkConfig,
   createBenchmarkConfig,
-  BenchmarkSample,
   DataLoader,
   BenchmarkEnvironment,
   getCacheDir,
   getDataDir,
 } from "./base";
+export type { BenchmarkConfig, BenchmarkSample } from "./base";
 
 // Environment implementations
 export {

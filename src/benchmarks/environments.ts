@@ -6,7 +6,7 @@
  */
 
 import { EnvironmentResult, Sample } from "../adaptation";
-import { BenchmarkConfig, BenchmarkEnvironment } from "./base";
+import { BenchmarkEnvironment } from "./base";
 
 /**
  * Generic benchmark environment for basic evaluation tasks.
@@ -15,9 +15,9 @@ import { BenchmarkConfig, BenchmarkEnvironment } from "./base";
  * Can be used for most text-based benchmarks with straightforward evaluation.
  */
 export class GenericBenchmarkEnvironment extends BenchmarkEnvironment {
-  evaluate(sample: Sample, generatorOutput: any): EnvironmentResult {
+  async evaluate(sample: Sample, generatorOutput: any): Promise<EnvironmentResult> {
     const prediction = generatorOutput.final_answer || "";
-    const groundTruth = sample.ground_truth || "";
+    const groundTruth = sample.groundTruth || "";
 
     // Compute metrics based on configuration
     const metrics = this.computeMetrics(prediction, groundTruth);
@@ -40,7 +40,7 @@ export class GenericBenchmarkEnvironment extends BenchmarkEnvironment {
 
     return {
       feedback,
-      ground_truth: groundTruth,
+      groundTruth: groundTruth,
       metrics,
     };
   }
@@ -53,7 +53,7 @@ export class GenericBenchmarkEnvironment extends BenchmarkEnvironment {
  * token-level and entity-level evaluation metrics.
  */
 export class FiNEREnvironment extends BenchmarkEnvironment {
-  evaluate(sample: Sample, generatorOutput: any): EnvironmentResult {
+  async evaluate(sample: Sample, generatorOutput: any): Promise<EnvironmentResult> {
     const prediction = generatorOutput.final_answer || "";
 
     // Extract entities from prediction and ground truth
@@ -72,7 +72,7 @@ export class FiNEREnvironment extends BenchmarkEnvironment {
 
     return {
       feedback,
-      ground_truth: sample.ground_truth,
+      groundTruth: sample.groundTruth,
       metrics,
     };
   }
@@ -82,7 +82,7 @@ export class FiNEREnvironment extends BenchmarkEnvironment {
    */
   private extractEntities(
     prediction: string,
-    sample: Sample
+    _sample: Sample
   ): Set<string> {
     const entities = new Set<string>();
 
@@ -156,7 +156,8 @@ export class FiNEREnvironment extends BenchmarkEnvironment {
 
     // Check if entities are already extracted by processor
     if (sample.metadata) {
-      const extractedEntities = sample.metadata.entities || [];
+      const metadata = sample.metadata as any;
+      const extractedEntities = metadata.entities || [];
 
       if (extractedEntities.length > 0) {
         // Use pre-extracted entities from processor
@@ -167,8 +168,8 @@ export class FiNEREnvironment extends BenchmarkEnvironment {
       }
 
       // Fallback: parse from BIO labels if available
-      const tokens = sample.metadata.tokens || [];
-      const bioLabels = sample.metadata.bio_labels || [];
+      const tokens = metadata.tokens || [];
+      const bioLabels = metadata.bio_labels || [];
 
       if (
         tokens.length > 0 &&
@@ -179,7 +180,7 @@ export class FiNEREnvironment extends BenchmarkEnvironment {
         let currentLabel: string | null = null;
 
         for (let i = 0; i < tokens.length; i++) {
-          const token = tokens[i];
+          const _token = tokens[i];
           const label = bioLabels[i];
 
           if (label.startsWith("B-")) {
@@ -187,11 +188,11 @@ export class FiNEREnvironment extends BenchmarkEnvironment {
             if (currentEntity.length > 0 && currentLabel) {
               entities.add(`${currentEntity.join(" ")}|||${currentLabel}`);
             }
-            currentEntity = [token];
+            currentEntity = [_token];
             currentLabel = label.substring(2); // Remove B- prefix
           } else if (label.startsWith("I-") && currentLabel) {
             // Inside entity
-            currentEntity.push(token);
+            currentEntity.push(_token);
           } else {
             // O or end of entity
             if (currentEntity.length > 0 && currentLabel) {
@@ -306,9 +307,9 @@ export class FiNEREnvironment extends BenchmarkEnvironment {
  * focusing on accuracy of calculations and understanding of financial relationships.
  */
 export class XBRLMathEnvironment extends BenchmarkEnvironment {
-  evaluate(sample: Sample, generatorOutput: any): EnvironmentResult {
+  async evaluate(sample: Sample, generatorOutput: any): Promise<EnvironmentResult> {
     const prediction = generatorOutput.final_answer || "";
-    const groundTruth = sample.ground_truth || "";
+    const groundTruth = sample.groundTruth || "";
 
     // Extract numerical answer from prediction
     const predictedNumber = this.extractNumber(prediction);
@@ -330,7 +331,7 @@ export class XBRLMathEnvironment extends BenchmarkEnvironment {
 
     return {
       feedback,
-      ground_truth: groundTruth,
+      groundTruth: groundTruth,
       metrics,
     };
   }
@@ -451,7 +452,7 @@ export class XBRLMathEnvironment extends BenchmarkEnvironment {
  * API interactions, task completion, and execution success metrics.
  */
 export class AppWorldEnvironment extends BenchmarkEnvironment {
-  evaluate(sample: Sample, generatorOutput: any): EnvironmentResult {
+  async evaluate(sample: Sample, generatorOutput: any): Promise<EnvironmentResult> {
     // AppWorld evaluation is typically done through the world.execute() method
     // This environment focuses on analyzing the execution results
 
@@ -468,7 +469,7 @@ export class AppWorldEnvironment extends BenchmarkEnvironment {
 
     return {
       feedback,
-      ground_truth: sample.ground_truth,
+      groundTruth: sample.groundTruth,
       metrics,
     };
   }

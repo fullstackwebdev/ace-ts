@@ -78,7 +78,7 @@ export abstract class BenchmarkEnvironment extends TaskEnvironment {
   /**
    * Evaluate generator output against benchmark criteria.
    */
-  abstract evaluate(sample: Sample, generatorOutput: any): EnvironmentResult;
+  abstract evaluate(sample: Sample, generatorOutput: any): Promise<EnvironmentResult>;
 
   /**
    * Compute configured metrics for the benchmark.

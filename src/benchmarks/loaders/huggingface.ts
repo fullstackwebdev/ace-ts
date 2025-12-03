@@ -13,11 +13,7 @@
  * This implementation provides the interface and basic structure for future integration.
  */
 
-import * as os from "os";
-import * as path from "path";
-import { DataLoader, getCacheDir } from "../base";
-import { getProcessor } from "../processors";
-import { Sample } from "../../adaptation";
+import { DataLoader } from "../base";
 
 /**
  * Data loader for HuggingFace datasets with streaming support.
@@ -40,8 +36,6 @@ import { Sample } from "../../adaptation";
  *     }
  */
 export class HuggingFaceLoader extends DataLoader {
-  private defaultCacheDir?: string;
-  private _cachedCacheDir?: string;
 
   /**
    * Initialize HuggingFace loader.
@@ -49,9 +43,9 @@ export class HuggingFaceLoader extends DataLoader {
    * @param defaultCacheDir - Default cache directory.
    *                          Falls back to environment variables or HF default.
    */
-  constructor(defaultCacheDir?: string) {
+  constructor(_defaultCacheDir?: string) {
     super();
-    this.defaultCacheDir = defaultCacheDir;
+    // this.defaultCacheDir = defaultCacheDir; // Commented out until HuggingFace integration is implemented
   }
 
   /**
@@ -75,7 +69,7 @@ export class HuggingFaceLoader extends DataLoader {
    *
    * @yields Dictionary containing sample data from the dataset (potentially processed)
    */
-  async *load(kwargs?: Record<string, any>): AsyncGenerator<Record<string, any>> {
+  async *load(_kwargs?: Record<string, any>): AsyncGenerator<Record<string, any>> {
     // Note: This would require a HuggingFace datasets library for TypeScript
     // For now, this is a stub implementation
     throw new Error(
@@ -102,7 +96,7 @@ export class HuggingFaceLoader extends DataLoader {
       cacheDir = this.defaultCacheDir;
     }
     if (!cacheDir) {
-      cacheDir = this.getCacheDirInternal();
+      cacheDir = this._getCacheDirInternal();
     }
 
     // Load dataset (requires HuggingFace integration)
@@ -136,8 +130,10 @@ export class HuggingFaceLoader extends DataLoader {
 
   /**
    * Get cache directory with fallback hierarchy.
+   * Note: Currently unused as HuggingFace integration is not implemented
    */
-  private getCacheDirInternal(): string {
+  /*
+  private _getCacheDirInternal(): string {
     if (this._cachedCacheDir) {
       return this._cachedCacheDir;
     }
@@ -165,6 +161,7 @@ export class HuggingFaceLoader extends DataLoader {
     );
     return this._cachedCacheDir;
   }
+  */
 
   /**
    * Get metadata about a HuggingFace dataset without downloading.
@@ -174,8 +171,8 @@ export class HuggingFaceLoader extends DataLoader {
    * @returns Dictionary with dataset information including features, splits, etc.
    */
   async getDatasetInfo(
-    datasetPath: string,
-    subset?: string
+    _datasetPath: string,
+    _subset?: string
   ): Promise<Record<string, any>> {
     throw new Error(
       "HuggingFace datasets library required. " +
@@ -221,7 +218,7 @@ export class HuggingFaceLoader extends DataLoader {
    * @param datasetPath - HuggingFace dataset identifier
    * @returns List of available configuration names
    */
-  async listDatasetConfigs(datasetPath: string): Promise<string[]> {
+  async listDatasetConfigs(_datasetPath: string): Promise<string[]> {
     throw new Error(
       "HuggingFace datasets library required. " +
         "Implement using HuggingFace REST API for dataset configs."
