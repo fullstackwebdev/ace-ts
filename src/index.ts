@@ -73,3 +73,6 @@ export type {
   EnvironmentResult,
   AdapterStepResult,
 } from './adaptation.js';
+
+// Integrations
+export { wrapPlaybookContext } from './integrations/base.js';
