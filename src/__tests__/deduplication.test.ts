@@ -254,16 +254,8 @@ describe("PromptGeneration", () => {
   });
 
   it("should include pair information in report", () => {
-    const bulletA = new Bullet({
-      id: "general-00001",
-      content: "Strategy A",
-      section: "general",
-    });
-    const bulletB = new Bullet({
-      id: "general-00002",
-      content: "Strategy B",
-      section: "general",
-    });
+    const bulletA = new Bullet("general-00001", "general", "Strategy A");
+    const bulletB = new Bullet("general-00002", "general", "Strategy B");
     bulletA.helpful = 5;
     bulletB.harmful = 2;
 
@@ -280,16 +272,12 @@ describe("PromptGeneration", () => {
   });
 
   it("should format pair for logging with truncation", () => {
-    const bulletA = new Bullet({
-      id: "general-00001",
-      content: "A very long strategy description that should be truncated",
-      section: "general",
-    });
-    const bulletB = new Bullet({
-      id: "general-00002",
-      content: "Another strategy",
-      section: "general",
-    });
+    const bulletA = new Bullet(
+      "general-00001",
+      "general",
+      "A very long strategy description that should be truncated"
+    );
+    const bulletB = new Bullet("general-00002", "general", "Another strategy");
 
     const logStr = formatPairForLogging(bulletA, bulletB, 0.88);
 
