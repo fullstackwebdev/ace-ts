@@ -40,6 +40,27 @@ export {
   CURATOR_PROMPT,
 } from './prompts.js';
 
+// Prompts v2.1
+export {
+  GENERATOR_V2_1_PROMPT,
+  REFLECTOR_V2_1_PROMPT,
+  CURATOR_V2_1_PROMPT,
+  GENERATOR_MATH_V2_1_PROMPT,
+  GENERATOR_CODE_V2_1_PROMPT,
+  PLAYBOOK_USAGE_INSTRUCTIONS,
+  wrapPlaybookForExternalAgent,
+  PromptManager,
+  validatePromptOutputV21,
+  MIGRATION_GUIDE_V21,
+  comparePromptVersions,
+} from './prompts-v2-1.js';
+export type {
+  PromptStats,
+  PromptVersion,
+  ValidationResult,
+  PromptComparison,
+} from './prompts-v2-1.js';
+
 // Adaptation
 export {
   OfflineAdapter,
