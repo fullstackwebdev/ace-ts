@@ -77,6 +77,18 @@ export type {
 // Integrations
 export { wrapPlaybookContext } from './integrations/base.js';
 
+// Async Learning
+export {
+  AsyncLearningPipeline,
+  ThreadSafePlaybook,
+} from './async-learning.js';
+export type {
+  LearningTask,
+  ReflectionResult,
+  AsyncLearningCallbacks,
+  AsyncLearningOptions,
+} from './async-learning.js';
+
 // Features
 export {
   hasOpik,
