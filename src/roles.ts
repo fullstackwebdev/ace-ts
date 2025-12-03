@@ -268,6 +268,10 @@ export class Curator {
 /**
  * Replay Generator - replays pre-recorded responses instead of calling an LLM
  * Useful for offline training from historical data
+ *
+ * Supports two modes:
+ * 1. Dict-based mode: Look up responses by question (backward compatible)
+ * 2. Sample-based mode: Extract response from sample object (new)
  */
 export class ReplayGenerator {
   constructor(
@@ -276,28 +280,99 @@ export class ReplayGenerator {
   ) {}
 
   /**
+   * Extract response from sample object using multiple fallback strategies
+   */
+  private extractResponseFromSample(sample: any): [string | null, string | null] {
+    // Try sample.metadata?.response (Sample object with metadata)
+    if (sample?.metadata && typeof sample.metadata === 'object') {
+      const response = sample.metadata.response;
+      if (response) {
+        return [response, 'sample_metadata'];
+      }
+    }
+
+    // Try sample.response (direct property)
+    if (sample && typeof sample === 'object' && 'response' in sample) {
+      const response = sample.response;
+      if (response) {
+        return [response, 'sample_dict_direct'];
+      }
+    }
+
+    return [null, null];
+  }
+
+  /**
    * Return the pre-recorded response for the given question
+   *
+   * Resolution priority:
+   * 1. Check if 'sample' provided and extract response from sample.metadata or sample object
+   * 2. Look up question in responses dict
+   * 3. Use default_response as fallback
    */
   async generate(options: {
     question: string;
     context?: string | null;
     playbook: Playbook;
     reflection?: string | null;
+    sample?: any;
   }): Promise<GeneratorOutput> {
-    const answer =
-      this.responses.get(options.question) || this.defaultResponse;
+    let finalAnswer: string | null = null;
+    let responseSource: string | null = null;
 
-    if (!answer) {
+    // Priority 1: Extract from sample if provided
+    if (options.sample) {
+      [finalAnswer, responseSource] = this.extractResponseFromSample(options.sample);
+    }
+
+    // Priority 2: Look up in responses dict
+    if (!finalAnswer && this.responses.has(options.question)) {
+      finalAnswer = this.responses.get(options.question)!;
+      responseSource = 'responses_dict';
+    }
+
+    // Priority 3: Use default response
+    if (!finalAnswer && this.defaultResponse) {
+      finalAnswer = this.defaultResponse;
+      responseSource = 'default_response';
+    }
+
+    // Validation: Ensure we have a response
+    if (!finalAnswer) {
       throw new Error(
-        `ReplayGenerator could not find response for question: ${options.question.slice(0, 100)}...`
+        `ReplayGenerator could not find response for question: '${options.question.slice(0, 100)}...'. ` +
+        `Checked: sample=${!!options.sample}, ` +
+        `responses_dict=${this.responses.has(options.question)}, ` +
+        `default_response=${!!this.defaultResponse}. ` +
+        'Ensure sample has "response" field or provide default_response.'
       );
     }
 
+    // Create metadata for observability
+    const reasoningMap: Record<string, string> = {
+      'sample_metadata': '[Replayed from sample.metadata]',
+      'sample_dict_metadata': '[Replayed from sample dict metadata]',
+      'sample_dict_direct': '[Replayed from sample dict]',
+      'responses_dict': '[Replayed from responses dict]',
+      'default_response': '[Replayed using default response]',
+    };
+    const reasoning = reasoningMap[responseSource || ''] || '[Replayed - source unknown]';
+
     return {
-      reasoning: '[Replayed from recorded responses]',
-      final_answer: answer,
+      reasoning,
+      final_answer: finalAnswer,
       bullet_ids: [],
-      raw: { replayed: true },
+      raw: {
+        reasoning,
+        final_answer: finalAnswer,
+        bullet_ids: [],
+        replay_metadata: {
+          response_source: responseSource,
+          question_found_in_dict: this.responses.has(options.question),
+          sample_provided: !!options.sample,
+          total_responses_in_mapping: this.responses.size,
+        },
+      },
     };
   }
 }
