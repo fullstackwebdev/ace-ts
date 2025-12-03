@@ -265,20 +265,30 @@ export class OfflineAdapter extends AdapterBase {
       const epochResults: AdapterStepResult[] = [];
 
       for (let i = 0; i < samples.length; i++) {
-        const result = await this.processSample(
-          samples[i],
-          environment,
-          epoch,
-          epochs,
-          i + 1,
-          samples.length
-        );
+        try {
+          const result = await this.processSample(
+            samples[i],
+            environment,
+            epoch,
+            epochs,
+            i + 1,
+            samples.length
+          );
 
-        epochResults.push(result);
-        allResults.push(result);
+          epochResults.push(result);
+          allResults.push(result);
 
-        if (options.onSampleProcessed) {
-          options.onSampleProcessed(result);
+          if (options.onSampleProcessed) {
+            options.onSampleProcessed(result);
+          }
+        } catch (error) {
+          // Log error and continue to next sample
+          console.warn(
+            `Failed to process sample ${i + 1} in epoch ${epoch}:`,
+            error instanceof Error ? error.message : String(error)
+          );
+          // Skip this sample and continue
+          continue;
         }
       }
 
@@ -308,19 +318,29 @@ export class OnlineAdapter extends AdapterBase {
     const results: AdapterStepResult[] = [];
 
     for (let i = 0; i < samples.length; i++) {
-      const result = await this.processSample(
-        samples[i],
-        environment,
-        1, // Online is single-pass (epoch=1)
-        1,
-        i + 1,
-        samples.length
-      );
+      try {
+        const result = await this.processSample(
+          samples[i],
+          environment,
+          1, // Online is single-pass (epoch=1)
+          1,
+          i + 1,
+          samples.length
+        );
 
-      results.push(result);
+        results.push(result);
 
-      if (options.onSampleProcessed) {
-        options.onSampleProcessed(result);
+        if (options.onSampleProcessed) {
+          options.onSampleProcessed(result);
+        }
+      } catch (error) {
+        // Log error and continue to next sample
+        console.warn(
+          `Failed to process sample ${i + 1}:`,
+          error instanceof Error ? error.message : String(error)
+        );
+        // Skip this sample and continue
+        continue;
       }
     }
 
