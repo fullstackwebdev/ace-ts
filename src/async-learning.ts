@@ -255,6 +255,7 @@ export class AsyncLearningPipeline extends EventEmitter {
   private _curatorQueue: ReflectionResult[] = [];
   private _curatorQueueSize: number;
   private _curatorProcessing = false;
+  private _curatorBusy = false; // Track if curator is actively processing
   private _stopRequested = false;
 
   // Stats
@@ -393,9 +394,9 @@ export class AsyncLearningPipeline extends EventEmitter {
       // Other errors are already handled in workers
     }
 
-    // Wait for Curator queue to drain
+    // Wait for Curator queue to drain AND for any active curator processing to complete
     const pollInterval = 100; // ms
-    while (this._curatorQueue.length > 0) {
+    while (this._curatorQueue.length > 0 || this._curatorBusy) {
       if (timeout) {
         const elapsed = Date.now() - startTime;
         if (elapsed >= timeout) {
@@ -465,8 +466,9 @@ export class AsyncLearningPipeline extends EventEmitter {
       this._curatorQueue.push(result);
       this._reflectionsCompleted++;
 
-      // Trigger curator processing
-      this._processCuratorQueue();
+      // Trigger curator processing (don't await to allow parallel reflections)
+      // Use setImmediate to ensure queue processing happens asynchronously
+      setImmediate(() => this._processCuratorQueue());
     } catch (error) {
       console.warn(
         `Reflector failed for sample ${task.stepIndex}: ${(error as Error).message}`
@@ -497,31 +499,36 @@ export class AsyncLearningPipeline extends EventEmitter {
    */
   private async _processCuratorQueue(): Promise<void> {
     // Skip if already processing or stopped
-    if (this._stopRequested) {
+    if (this._stopRequested || this._curatorBusy) {
       return;
     }
 
-    // Process queue items sequentially
-    while (this._curatorQueue.length > 0) {
-      const result = this._curatorQueue.shift();
-      if (!result) break;
+    this._curatorBusy = true;
+    try {
+      // Process queue items sequentially
+      while (this._curatorQueue.length > 0) {
+        const result = this._curatorQueue.shift();
+        if (!result) break;
 
-      try {
-        await this._processCuration(result);
-      } catch (error) {
-        console.warn(
-          `Curator failed for sample ${result.task.stepIndex}: ${(error as Error).message}`
-        );
-        this._tasksFailed++;
+        try {
+          await this._processCuration(result);
+        } catch (error) {
+          console.warn(
+            `Curator failed for sample ${result.task.stepIndex}: ${(error as Error).message}`
+          );
+          this._tasksFailed++;
 
-        if (this._onError) {
-          try {
-            this._onError(error as Error, result.task);
-          } catch {
-            // Don't let callback errors propagate
+          if (this._onError) {
+            try {
+              this._onError(error as Error, result.task);
+            } catch {
+              // Don't let callback errors propagate
+            }
           }
         }
       }
+    } finally {
+      this._curatorBusy = false;
     }
   }
 
