@@ -40,6 +40,22 @@ export {
   CURATOR_PROMPT,
 } from './prompts.js';
 
+// Prompts v2.0
+export {
+  GENERATOR_V2_PROMPT,
+  REFLECTOR_V2_PROMPT,
+  CURATOR_V2_PROMPT,
+  GENERATOR_MATH_PROMPT,
+  GENERATOR_CODE_PROMPT,
+  PromptManager as PromptManagerV2,
+  validatePromptOutput,
+  MIGRATION_GUIDE,
+} from './prompts-v2.js';
+export type {
+  PromptVersions,
+  ValidationResult as ValidationResultV2,
+} from './prompts-v2.js';
+
 // Prompts v2.1
 export {
   GENERATOR_V2_1_PROMPT,
