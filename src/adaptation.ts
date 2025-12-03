@@ -11,6 +11,8 @@ import {
   ReflectorOutput,
 } from './roles.js';
 import { DeltaBatch } from './delta.js';
+import { mkdir } from 'fs/promises';
+import { join } from 'path';
 
 /**
  * Single task instance presented to ACE
@@ -249,6 +251,8 @@ export class OfflineAdapter extends AdapterBase {
     environment: TaskEnvironment,
     options: {
       epochs?: number;
+      checkpointInterval?: number;
+      checkpointDir?: string;
       onEpochStart?: (epoch: number) => void;
       onSampleProcessed?: (result: AdapterStepResult) => void;
       onEpochComplete?: (epoch: number, results: AdapterStepResult[]) => void;
@@ -256,6 +260,18 @@ export class OfflineAdapter extends AdapterBase {
   ): Promise<AdapterStepResult[]> {
     const epochs = options.epochs || 1;
     const allResults: AdapterStepResult[] = [];
+
+    // Validate checkpoint parameters
+    if (options.checkpointInterval !== undefined && !options.checkpointDir) {
+      throw new Error(
+        'checkpointDir must be provided when checkpointInterval is set'
+      );
+    }
+
+    // Create checkpoint directory if needed
+    if (options.checkpointDir) {
+      await mkdir(options.checkpointDir, { recursive: true });
+    }
 
     for (let epoch = 1; epoch <= epochs; epoch++) {
       if (options.onEpochStart) {
@@ -280,6 +296,28 @@ export class OfflineAdapter extends AdapterBase {
 
           if (options.onSampleProcessed) {
             options.onSampleProcessed(result);
+          }
+
+          // Save checkpoint if interval reached
+          if (
+            options.checkpointInterval &&
+            options.checkpointDir &&
+            allResults.length % options.checkpointInterval === 0
+          ) {
+            const numberedCheckpoint = join(
+              options.checkpointDir,
+              `convex_checkpoint_${allResults.length}.json`
+            );
+            const latestCheckpoint = join(
+              options.checkpointDir,
+              'convex_latest.json'
+            );
+
+            await this.playbook.saveToFile(numberedCheckpoint);
+            await this.playbook.saveToFile(latestCheckpoint);
+            console.log(
+              `Checkpoint saved: ${allResults.length} samples → convex_checkpoint_${allResults.length}.json`
+            );
           }
         } catch (error) {
           // Log error and continue to next sample

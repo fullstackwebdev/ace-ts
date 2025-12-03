@@ -223,8 +223,7 @@ describe('Integration Tests - Offline Adaptation', () => {
     expect(finalBullets).toBeGreaterThanOrEqual(initialBullets);
   });
 
-  test.skip('checkpoint functionality', async () => {
-    // TODO: Checkpoint functionality not yet implemented in TypeScript version
+  test('checkpoint functionality', async () => {
     // Create temporary directory
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ace-test-'));
 
