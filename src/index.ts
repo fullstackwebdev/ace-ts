@@ -76,3 +76,15 @@ export type {
 
 // Integrations
 export { wrapPlaybookContext } from './integrations/base.js';
+
+// Features
+export {
+  hasOpik,
+  hasVercelAI,
+  hasLangChain,
+  hasBrowserUse,
+  hasPlaywright,
+  getAvailableFeatures,
+  printFeatureStatus,
+  resetFeatureCache,
+} from './features.js';
