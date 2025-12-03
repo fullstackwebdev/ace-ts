@@ -92,6 +92,8 @@ export type {
 
 // Integrations
 export { wrapPlaybookContext } from './integrations/base.js';
+export { ACEVercelAI } from './integrations/vercel-ai.js';
+export type { ACEVercelAIConfig } from './integrations/vercel-ai.js';
 
 // Async Learning
 export {
