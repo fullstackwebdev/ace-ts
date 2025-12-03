@@ -58,8 +58,8 @@ export class DummyLLMClient extends LLMClient {
   }
 
   async complete(
-    prompt: string,
-    options?: Record<string, unknown>
+    _prompt: string,
+    _options?: Record<string, unknown>
   ): Promise<LLMResponse> {
     if (this._responses.length === 0) {
       throw new Error('DummyLLMClient ran out of queued responses.');
@@ -68,9 +68,9 @@ export class DummyLLMClient extends LLMClient {
   }
 
   async completeStructured<T extends z.ZodType>(
-    prompt: string,
+    _prompt: string,
     responseSchema: T,
-    options?: Record<string, unknown>
+    _options?: Record<string, unknown>
   ): Promise<z.infer<T>> {
     if (this._responses.length === 0) {
       throw new Error('DummyLLMClient ran out of queued responses.');

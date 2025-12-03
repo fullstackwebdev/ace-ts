@@ -120,7 +120,7 @@ export class VercelAIClient extends LLMClient {
 
       // Build metadata
       const metadata: Record<string, unknown> = {
-        model: response.usage?.model || this.model,
+        model: this.model,
         usage: {
           prompt_tokens: response.usage?.promptTokens || 0,
           completion_tokens: response.usage?.completionTokens || 0,

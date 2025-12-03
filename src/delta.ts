@@ -2,33 +2,10 @@
  * Delta operations produced by the ACE Curator.
  */
 
-import { z } from 'zod';
-
 /**
  * Valid operation types for delta mutations
  */
 export type OperationType = 'ADD' | 'UPDATE' | 'TAG' | 'REMOVE';
-
-/**
- * Schema for validating operation types
- */
-const OperationTypeSchema = z.enum(['ADD', 'UPDATE', 'TAG', 'REMOVE']);
-
-/**
- * Schema for delta operation metadata
- */
-const MetadataSchema = z.record(z.string(), z.number());
-
-/**
- * Schema for validating delta operations
- */
-const DeltaOperationSchema = z.object({
-  type: OperationTypeSchema,
-  section: z.string(),
-  content: z.string().optional().nullable(),
-  bullet_id: z.string().optional().nullable(),
-  metadata: MetadataSchema.optional(),
-});
 
 /**
  * Single mutation to apply to the playbook
@@ -99,14 +76,6 @@ export class DeltaOperation {
     return data;
   }
 }
-
-/**
- * Schema for validating delta batches
- */
-const DeltaBatchSchema = z.object({
-  reasoning: z.string(),
-  operations: z.array(DeltaOperationSchema).optional(),
-});
 
 /**
  * Bundle of curator reasoning and operations
