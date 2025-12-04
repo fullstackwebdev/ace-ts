@@ -36,9 +36,9 @@
     "zod": "^3.22.0"
   },
   "peerDependencies": {
-    "@ai-sdk/openai": "^1.0.0",
     "@ai-sdk/anthropic": "^1.0.0",
-    "@ai-sdk/google": "^1.0.0"
+    "@ai-sdk/google": "^1.0.0",
+    "@ai-sdk/openai": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "@ai-sdk/openai": {
@@ -52,6 +52,8 @@
     }
   },
   "devDependencies": {
+    "@ai-sdk/anthropic": "^2.0.53",
+    "@ai-sdk/google": "^2.0.44",
     "@ai-sdk/openai": "^1.0.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",

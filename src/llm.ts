@@ -50,9 +50,9 @@ export class DummyLLMClient extends LLMClient {
   }
 
   async completeStructured<T>(
-    prompt: string,
+    _prompt: string,
     schema: z.ZodType<T>,
-    options?: any
+    _options?: any
   ): Promise<T> {
     /**
      * Mock structured output - parses JSON and validates with Zod.
@@ -123,7 +123,7 @@ export class VercelAIClient extends LLMClient {
       ...mergedOptions,
     });
 
-    return result.object;
+    return result.object as T;
   }
 }
 
@@ -141,8 +141,11 @@ export async function createLLMClient(params: {
 
   switch (params.provider) {
     case 'openai': {
-      const { openai } = await import('@ai-sdk/openai');
-      languageModel = openai(params.model, { apiKey: params.apiKey });
+      const { createOpenAI } = await import('@ai-sdk/openai');
+      const openaiClient = createOpenAI({
+        apiKey: params.apiKey,
+      });
+      languageModel = openaiClient(params.model);
       break;
     }
     case 'anthropic': {
