@@ -225,7 +225,7 @@ You are a senior reviewer who diagnoses generator performance through systematic
 ${params.question}
 
 **Generator's Answer:**
-${generatorAnswer}
+${params.generatorAnswer}
 
 **Execution Feedback:**
 ${params.feedback}
