@@ -255,11 +255,11 @@ describe('Skillbook', () => {
 
       const stats = skillbook.stats();
 
-      expect(stats.total).toBe(2);
-      expect(stats.bySection['test1']).toBe(1);
-      expect(stats.bySection['test2']).toBe(1);
-      expect(stats.avgHelpful).toBe(4); // (5 + 3) / 2
-      expect(stats.avgHarmful).toBe(0.5); // (1 + 0) / 2
+      expect(stats.skills).toBe(2);
+      expect(stats.sections).toBe(2);
+      expect(stats.tags.helpful).toBe(8); // 5 + 3
+      expect(stats.tags.harmful).toBe(1); // 1 + 0
+      expect(stats.tags.neutral).toBe(0);
     });
   });
 
