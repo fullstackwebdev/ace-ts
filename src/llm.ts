@@ -137,7 +137,7 @@ export async function createLLMClient(params: {
   apiKey?: string;
   options?: any;
 }): Promise<VercelAIClient> {
-  let languageModel: LanguageModel;
+  let languageModel: any; // Accept both LanguageModelV1 and LanguageModelV2
 
   switch (params.provider) {
     case 'openai': {

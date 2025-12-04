@@ -103,7 +103,7 @@ export class SimpleEnvironment implements TaskEnvironment {
       };
     }
 
-    const answer = agentOutput.finalAnswer.toLowerCase();
+    const answer = agentOutput.final_answer.toLowerCase();
     const truth = sample.groundTruth.toLowerCase();
     const isCorrect = answer.includes(truth);
 
@@ -183,7 +183,7 @@ abstract class ACEBase {
    * Update recent reflections buffer.
    */
   protected updateRecentReflections(reflection: ReflectorOutput): void {
-    const serialized = JSON.stringify(reflection.raw, null, 0);
+    const serialized = JSON.stringify(reflection, null, 0);
     this.recentReflections.push(serialized);
     if (this.recentReflections.length > this.reflectionWindow) {
       this.recentReflections = this.recentReflections.slice(
@@ -196,9 +196,20 @@ abstract class ACEBase {
    * Apply skill tags from reflection.
    */
   protected applySkillTags(reflection: ReflectorOutput): void {
-    for (const tag of reflection.skillTags) {
+    // Tag helpful skills
+    for (const skillId of reflection.helpful_skill_ids) {
       try {
-        this.skillbook.tagSkill(tag.id, tag.tag);
+        this.skillbook.tagSkill(skillId, 'helpful');
+      } catch (error) {
+        // Skip invalid skill IDs
+        continue;
+      }
+    }
+
+    // Tag harmful skills
+    for (const skillId of reflection.harmful_skill_ids) {
+      try {
+        this.skillbook.tagSkill(skillId, 'harmful');
       } catch (error) {
         // Skip invalid skill IDs
         continue;
@@ -272,31 +283,29 @@ abstract class ACEBase {
     sample: Sample,
     environment: TaskEnvironment,
     epoch: number,
-    totalEpochs: number,
+    _totalEpochs: number,
     stepIndex: number,
-    totalSteps: number
+    _totalSteps: number
   ): Promise<ACEStepResult> {
     // Step 1: Agent generates answer
-    const agentOutput = await this.agent.generate(
-      sample.question,
-      this.skillbook,
-      sample.context,
-      this.reflectionContext(),
-      sample
-    );
+    const agentOutput = await this.agent.generate({
+      question: sample.question,
+      context: sample.context,
+      skillbook: this.skillbook,
+      reflection: this.reflectionContext(),
+    });
 
     // Step 2: Environment evaluates
     const envResult = environment.evaluate(sample, agentOutput);
 
     // Step 3: Reflector analyzes
-    const reflection = await this.reflector.reflect(
-      sample.question,
-      agentOutput,
-      this.skillbook,
-      envResult.groundTruth,
-      envResult.feedback,
-      this.maxRefinementRounds
-    );
+    const reflection = await this.reflector.reflect({
+      question: sample.question,
+      generatorAnswer: agentOutput.final_answer,
+      feedback: envResult.feedback,
+      groundTruth: envResult.groundTruth,
+      skillbook: this.skillbook,
+    });
 
     // Step 4: Apply tags and update reflection context
     this.applySkillTags(reflection);
