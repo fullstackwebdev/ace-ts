@@ -122,19 +122,19 @@ async function main() {
   firstSampleResults.forEach((result, epochIdx) => {
     const isCorrect = result.environmentResult.metrics?.correct === 1.0;
     const symbol = isCorrect ? '✓' : '✗';
-    console.log(`   Epoch ${epochIdx + 1}: ${symbol} ${result.agentOutput.finalAnswer.slice(0, 50)}`);
+    const answer = result.agentOutput.finalAnswer || result.agentOutput.answer || 'N/A';
+    console.log(`   Epoch ${epochIdx + 1}: ${symbol} ${answer.slice(0, 50)}`);
   });
 
   // Show final skillbook statistics
   const stats = skillbook.stats();
   console.log('\n📊 Final Skillbook Statistics:');
-  console.log(`   Total skills: ${stats.total}`);
-  console.log(`   Average helpful: ${stats.avgHelpful.toFixed(2)}`);
-  console.log(`   Average harmful: ${stats.avgHarmful.toFixed(2)}`);
-  console.log(`   Sections:`);
-  Object.entries(stats.bySection).forEach(([section, count]) => {
-    console.log(`      ${section}: ${count} skills`);
-  });
+  console.log(`   Total skills: ${stats.skills}`);
+  console.log(`   Total sections: ${stats.sections}`);
+  console.log(`   Tags:`);
+  console.log(`      Helpful: ${stats.tags.helpful}`);
+  console.log(`      Harmful: ${stats.tags.harmful}`);
+  console.log(`      Neutral: ${stats.tags.neutral}`);
 
   // Save skillbook for future use
   const skillbookPath = './trained_skillbook.json';
