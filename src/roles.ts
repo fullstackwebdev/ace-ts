@@ -41,10 +41,6 @@ function safeJsonLoads(text: string): Record<string, any> {
   }
 }
 
-function formatOptional(value?: string): string {
-  return value || '(none)';
-}
-
 export function extractCitedSkillIds(text: string): string[] {
   /**
    * Extract skill IDs cited in text using [id-format] notation.

@@ -63,12 +63,12 @@ describe('Skillbook', () => {
       expect(updated?.harmful).toBe(2);
     });
 
-    it('should return undefined for non-existent skill', () => {
+    it('should return null for non-existent skill', () => {
       const updated = skillbook.updateSkill('non-existent-id', {
         content: 'New content',
       });
 
-      expect(updated).toBeUndefined();
+      expect(updated).toBeNull();
     });
   });
 
@@ -99,10 +99,9 @@ describe('Skillbook', () => {
       }).toThrow();
     });
 
-    it('should throw error for non-existent skill', () => {
-      expect(() => {
-        skillbook.tagSkill('non-existent-id', 'helpful', 1);
-      }).toThrow();
+    it('should return null for non-existent skill', () => {
+      const result = skillbook.tagSkill('non-existent-id', 'helpful', 1);
+      expect(result).toBeNull();
     });
   });
 
@@ -112,7 +111,7 @@ describe('Skillbook', () => {
 
       skillbook.removeSkill(skill.id);
 
-      expect(skillbook.getSkill(skill.id)).toBeUndefined();
+      expect(skillbook.getSkill(skill.id)).toBeNull();
       expect(skillbook.skills()).toHaveLength(0);
     });
   });
@@ -128,9 +127,9 @@ describe('Skillbook', () => {
       expect(retrieved?.content).toBe('Test content');
     });
 
-    it('should return undefined for non-existent skill', () => {
+    it('should return null for non-existent skill', () => {
       const retrieved = skillbook.getSkill('non-existent-id');
-      expect(retrieved).toBeUndefined();
+      expect(retrieved).toBeNull();
     });
   });
 
