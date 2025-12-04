@@ -228,7 +228,7 @@ describe('Skillbook', () => {
 
       skillbook.applyUpdate(batch);
 
-      expect(skillbook.getSkill(skill.id)).toBeUndefined();
+      expect(skillbook.getSkill(skill.id)).toBeNull();
     });
   });
 
@@ -242,9 +242,9 @@ describe('Skillbook', () => {
       expect(prompt).toContain('"content":"Test skill"');
     });
 
-    it('should return empty array JSON for empty skillbook', () => {
+    it('should return empty skills JSON for empty skillbook', () => {
       const prompt = skillbook.asPrompt();
-      expect(prompt).toBe('[]');
+      expect(prompt).toBe('{"skills":[]}');
     });
   });
 
