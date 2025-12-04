@@ -35,7 +35,7 @@ export {
   extractCitedSkillIds,
 } from './roles.js';
 
-// Prompts
+// Prompts v1 (basic)
 export {
   SKILLBOOK_USAGE_INSTRUCTIONS,
   wrapSkillbookForExternalAgent,
@@ -43,6 +43,23 @@ export {
   createReflectorPrompt,
   createSkillManagerPrompt,
 } from './prompts.js';
+
+// Prompts v2 (advanced - state-of-the-art)
+export {
+  AGENT_V2_PROMPT,
+  GENERATOR_V2_PROMPT,
+  REFLECTOR_V2_PROMPT,
+  SKILL_MANAGER_V2_PROMPT,
+  CURATOR_V2_PROMPT,
+  AGENT_MATH_PROMPT,
+  GENERATOR_MATH_PROMPT,
+  AGENT_CODE_PROMPT,
+  GENERATOR_CODE_PROMPT,
+  PromptManager,
+  validatePromptOutput,
+  MIGRATION_GUIDE,
+} from './prompts_v2.js';
+export type { PromptVersions, ValidationResult } from './prompts_v2.js';
 
 // Adaptation loops
 export type {
