@@ -68,7 +68,7 @@ export class DeduplicationManager {
     await this.detector.ensureEmbeddings(skillbook);
 
     // Detect similar pairs
-    const similarPairs = await this.detector.detectSimilarPairs(skillbook);
+    const similarPairs = this.detector.detectSimilarPairs(skillbook);
 
     if (similarPairs.length < this.config.minPairsToReport) {
       if (similarPairs.length > 0) {

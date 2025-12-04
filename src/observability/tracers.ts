@@ -12,7 +12,7 @@ let _OPIK_INSTALLED = false;
 let track: any = null;
 
 try {
-  // @ts-ignore - Optional dependency
+  // @ts-expect-error - Optional dependency
   const opikModule = await import("opik");
   track = opikModule.track;
   _OPIK_INSTALLED = true;

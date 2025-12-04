@@ -173,7 +173,7 @@ export class SimilarityDetector {
      * Lazy load sentence-transformers model.
      */
     if (this._model === null) {
-      // @ts-ignore - sentence-transformers is an optional dependency
+      // @ts-expect-error - sentence-transformers is an optional dependency
       const { SentenceTransformer } = await import("sentence-transformers");
       this._model = new SentenceTransformer(this.config.localModelName);
     }
@@ -281,10 +281,10 @@ export class SimilarityDetector {
     return count;
   }
 
-  async detectSimilarPairs(
+  detectSimilarPairs(
     skillbook: Skillbook,
     threshold?: number,
-  ): Promise<Array<[Skill, Skill, number]>> {
+  ): Array<[Skill, Skill, number]> {
     /**
      * Find all pairs of skills with similarity >= threshold.
      *

@@ -11,7 +11,7 @@ let opikContext: any = null;
 let OPIK_AVAILABLE = false;
 
 try {
-  // @ts-ignore - Optional dependency
+  // @ts-expect-error - Optional dependency
   const opikModule = await import("opik");
   Opik = opikModule.Opik;
   opikContext = opikModule.opikContext;

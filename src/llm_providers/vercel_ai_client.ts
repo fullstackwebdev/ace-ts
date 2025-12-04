@@ -344,7 +344,7 @@ export class VercelAIClient extends LLMClient {
     messages.push({ role: "user", content: prompt });
 
     // Merge config with runtime kwargs
-    let mergedParams: Record<string, any> = {
+    const mergedParams: Record<string, any> = {
       temperature: kwargs.temperature ?? this.config.temperature,
       maxTokens: kwargs.maxTokens ?? kwargs.max_tokens ?? this.config.maxTokens,
     };
@@ -480,7 +480,7 @@ export class VercelAIClient extends LLMClient {
     };
 
     try {
-      const result = await streamText({
+      const result = streamText({
         model,
         prompt,
         system,
@@ -563,14 +563,14 @@ export class VercelAIClient extends LLMClient {
  * @param params Configuration parameters
  * @returns Configured VercelAIClient instance
  */
-export async function createVercelAIClient(params: {
+export function createVercelAIClient(params: {
   provider: "openai" | "anthropic" | "google";
   model: string;
   apiKey?: string;
   temperature?: number;
   maxTokens?: number;
   options?: Partial<VercelAIConfig>;
-}): Promise<VercelAIClient> {
+}): VercelAIClient {
   return new VercelAIClient({
     model: params.model,
     provider: params.provider,
