@@ -44,7 +44,7 @@ export {
   createSkillManagerPrompt,
 } from './prompts.js';
 
-// Prompts v2 (advanced - state-of-the-art)
+// Prompts v2 (advanced)
 export {
   AGENT_V2_PROMPT,
   GENERATOR_V2_PROMPT,
@@ -60,6 +60,21 @@ export {
   MIGRATION_GUIDE,
 } from './prompts_v2.js';
 export type { PromptVersions, ValidationResult } from './prompts_v2.js';
+
+// Prompts v2.1 (state-of-the-art - RECOMMENDED, +17% success rate)
+export {
+  SKILLBOOK_USAGE_INSTRUCTIONS as SKILLBOOK_USAGE_INSTRUCTIONS_V21,
+  wrapSkillbookForExternalAgent as wrapSkillbookForExternalAgentV21,
+  AGENT_V2_1_PROMPT,
+  REFLECTOR_V2_1_PROMPT,
+  SKILL_MANAGER_V2_1_PROMPT,
+  AGENT_MATH_V2_1_PROMPT,
+  AGENT_CODE_V2_1_PROMPT,
+  PromptManager as PromptManagerV21,
+  validatePromptOutputV21,
+  MIGRATION_GUIDE_V21,
+  comparePromptVersions,
+} from './prompts_v2_1.js';
 
 // Adaptation loops
 export type {

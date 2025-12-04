@@ -1125,14 +1125,6 @@ MANDATORY: Begin response with \`{\` and end with \`}\`
 // PROMPT MANAGER V2.1
 // ================================
 
-interface PromptVersion {
-  '1.0': string;
-  '2.0': string;
-  '2.1': string;
-  '2.1-math'?: string;
-  '2.1-code'?: string;
-}
-
 export class PromptManager {
   /**
    * Enhanced Prompt Manager supporting v2.1 prompts with MCP techniques.
