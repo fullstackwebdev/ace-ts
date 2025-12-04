@@ -150,12 +150,86 @@ import { google } from '@ai-sdk/google';
 const agent = new ACEAgent({ model: google('gemini-2.0-flash-exp') });
 ```
 
+## Training & Adaptation
+
+ACE supports two learning modes:
+
+### Offline Training
+
+Train over a fixed dataset multiple times:
+
+```typescript
+import { OfflineACE, Agent, Reflector, SkillManager, SimpleEnvironment } from '@kayba/ace-framework';
+
+const ace = new OfflineACE({
+  agent: new Agent(llmClient),
+  reflector: new Reflector(llmClient),
+  skillManager: new SkillManager(llmClient)
+});
+
+const samples = [
+  { question: "What is 2+2?", groundTruth: "4" },
+  { question: "What is 5*3?", groundTruth: "15" }
+];
+
+// Train for 3 epochs
+const results = await ace.run(samples, new SimpleEnvironment(), {
+  epochs: 3,
+  checkpointInterval: 10,
+  checkpointDir: './checkpoints'
+});
+
+// Access evolved skillbook
+const skillbook = ace.getSkillbook();
+```
+
+### Online Learning
+
+Learn continuously from streaming samples:
+
+```typescript
+import { OnlineACE, Agent, Reflector, SkillManager, SimpleEnvironment } from '@kayba/ace-framework';
+
+const ace = new OnlineACE({
+  skillbook: await Skillbook.loadFromFile('pretrained.json'),
+  agent: new Agent(llmClient),
+  reflector: new Reflector(llmClient),
+  skillManager: new SkillManager(llmClient)
+});
+
+// Process samples as they arrive
+const results = await ace.run(streamingSamples, new SimpleEnvironment());
+```
+
+### Custom Task Environments
+
+Implement your own evaluation logic:
+
+```typescript
+import { TaskEnvironment, Sample, AgentOutput, EnvironmentResult } from '@kayba/ace-framework';
+
+class MathEnvironment implements TaskEnvironment {
+  evaluate(sample: Sample, agentOutput: AgentOutput): EnvironmentResult {
+    const predicted = extractNumber(agentOutput.finalAnswer);
+    const correct = predicted.toString() === sample.groundTruth;
+
+    return {
+      feedback: correct ? "Correct!" : `Wrong. Expected ${sample.groundTruth}`,
+      groundTruth: sample.groundTruth,
+      metrics: { accuracy: correct ? 1.0 : 0.0 }
+    };
+  }
+}
+```
+
 ## Examples
 
 See the `examples/` directory:
 
 - `simple-example.ts` - Basic Q&A with automatic learning
 - `seahorse-emoji.ts` - Seahorse emoji challenge (learning from mistakes)
+- `offline-training.ts` - Multi-epoch training over math problems
+- `online-learning.ts` - Continuous learning from streaming samples
 
 Run examples:
 
@@ -165,6 +239,8 @@ npm install
 
 # Run with tsx
 npx tsx examples/simple-example.ts
+npx tsx examples/offline-training.ts
+npx tsx examples/online-learning.ts
 ```
 
 ## Development
@@ -196,12 +272,18 @@ src/
 ├── llm.ts               # LLM client interface (Vercel AI SDK)
 ├── roles.ts             # Agent, Reflector, SkillManager
 ├── prompts.ts           # Prompt templates (v2.1)
+├── adaptation.ts        # OfflineACE, OnlineACE training loops
 └── integrations/
     └── simple.ts        # ACEAgent (simple integration)
 
 examples/
 ├── simple-example.ts    # Basic usage
-└── seahorse-emoji.ts    # Learning from mistakes
+├── seahorse-emoji.ts    # Learning from mistakes
+├── offline-training.ts  # Multi-epoch training
+└── online-learning.ts   # Continuous learning
+
+tests/
+└── skillbook.test.ts    # Unit tests
 
 dist/                    # Compiled JavaScript (after build)
 ```
