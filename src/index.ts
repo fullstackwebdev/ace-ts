@@ -131,3 +131,22 @@ export {
   printFeatureStatus,
   clearFeatureCache,
 } from './features.js';
+
+// Deduplication system
+export type {
+  DeduplicationConfig,
+  EmbeddingProvider,
+  MergeOp,
+  DeleteOp,
+  KeepOp,
+  UpdateOp,
+  ConsolidationOperation,
+} from './deduplication/index.js';
+export {
+  createDeduplicationConfig,
+  SimilarityDetector,
+  DeduplicationManager,
+  applyConsolidationOperations,
+  generateSimilarityReport,
+  formatPairForLogging,
+} from './deduplication/index.js';
