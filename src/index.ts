@@ -109,6 +109,13 @@ export { ACEAgent } from './integrations/simple.js';
 // Integration utilities for external agents
 export { wrapSkillbookContext } from './integrations/base.js';
 
+// LLM Provider implementations
+export type { VercelAIConfig } from './llm_providers/index.js';
+export {
+  VercelAIClient as VercelAIProviderClient,
+  createVercelAIClient,
+} from './llm_providers/index.js';
+
 // Feature detection utilities
 export {
   hasVercelAI,
