@@ -167,6 +167,7 @@ export class SimilarityDetector {
      * Lazy load sentence-transformers model.
      */
     if (this._model === null) {
+      // @ts-ignore - sentence-transformers is an optional dependency
       const { SentenceTransformer } = await import('sentence-transformers');
       this._model = new SentenceTransformer(this.config.localModelName);
     }
@@ -293,7 +294,7 @@ export class SimilarityDetector {
     const similarPairs: Array<[Skill, Skill, number]> = [];
 
     // Get active skills only
-    const skills = skillbook.skills({ includeInvalid: false });
+    const skills = skillbook.skills(false);
 
     // Group by section if configured
     if (this.config.withinSectionOnly) {

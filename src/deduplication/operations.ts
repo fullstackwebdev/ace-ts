@@ -110,7 +110,7 @@ function applyMerge(op: MergeOp, skillbook: Skillbook): void {
     keepSkill.neutral += source.neutral;
 
     // Soft delete source
-    skillbook.removeSkill(sourceId, { soft: true });
+    skillbook.removeSkill(sourceId, true);
     logger.info(`MERGE: Soft-deleted ${sourceId} into ${op.keep_id}`);
   }
 
@@ -136,7 +136,7 @@ function applyDelete(op: DeleteOp, skillbook: Skillbook): void {
     return;
   }
 
-  skillbook.removeSkill(op.skill_id, { soft: true });
+  skillbook.removeSkill(op.skill_id, true);
   logger.info(`DELETE: Soft-deleted ${op.skill_id}`);
 }
 

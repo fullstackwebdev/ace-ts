@@ -101,6 +101,21 @@ export function hasDotenv(): boolean {
 }
 
 /**
+ * Check if numpy-like library is available (not applicable in TypeScript).
+ * This is a stub for Python compatibility - always returns false.
+ */
+export function hasNumpy(): boolean {
+  return false;
+}
+
+/**
+ * Check if sentence-transformers library is available.
+ */
+export function hasSentenceTransformers(): boolean {
+  return checkImport('sentence-transformers');
+}
+
+/**
  * Get a dictionary of all available features.
  *
  * @returns Object mapping feature names to availability status
