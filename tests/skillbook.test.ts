@@ -2,7 +2,7 @@
  * Tests for Skillbook functionality.
  */
 
-import { Skillbook, createSkill } from '../src/skillbook';
+import { Skillbook } from '../src/skillbook';
 import { createUpdateBatch } from '../src/updates';
 
 describe('Skillbook', () => {
@@ -14,10 +14,7 @@ describe('Skillbook', () => {
 
   describe('addSkill', () => {
     it('should add a new skill to the skillbook', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test content',
-      });
+      const skill = skillbook.addSkill('test', 'Test content');
 
       expect(skill).toBeDefined();
       expect(skill.section).toBe('test');
@@ -26,10 +23,9 @@ describe('Skillbook', () => {
     });
 
     it('should add skills with metadata', () => {
-      const skill = skillbook.addSkill({
-        section: 'general',
-        content: 'Always be clear',
-        metadata: { helpful: 5, harmful: 0 },
+      const skill = skillbook.addSkill('general', 'Always be clear', undefined, {
+        helpful: 5,
+        harmful: 0,
       });
 
       expect(skill.helpful).toBe(5);
@@ -37,14 +33,8 @@ describe('Skillbook', () => {
     });
 
     it('should generate unique IDs for each skill', () => {
-      const skill1 = skillbook.addSkill({
-        section: 'test',
-        content: 'Content 1',
-      });
-      const skill2 = skillbook.addSkill({
-        section: 'test',
-        content: 'Content 2',
-      });
+      const skill1 = skillbook.addSkill('test', 'Content 1');
+      const skill2 = skillbook.addSkill('test', 'Content 2');
 
       expect(skill1.id).not.toBe(skill2.id);
     });
@@ -52,10 +42,7 @@ describe('Skillbook', () => {
 
   describe('updateSkill', () => {
     it('should update existing skill content', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Original content',
-      });
+      const skill = skillbook.addSkill('test', 'Original content');
 
       const updated = skillbook.updateSkill(skill.id, {
         content: 'Updated content',
@@ -66,11 +53,7 @@ describe('Skillbook', () => {
     });
 
     it('should update skill metadata', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test',
-        metadata: { helpful: 5 },
-      });
+      const skill = skillbook.addSkill('test', 'Test', undefined, { helpful: 5 });
 
       const updated = skillbook.updateSkill(skill.id, {
         metadata: { helpful: 10, harmful: 2 },
@@ -91,11 +74,7 @@ describe('Skillbook', () => {
 
   describe('tagSkill', () => {
     it('should increment helpful counter', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test',
-        metadata: { helpful: 5 },
-      });
+      const skill = skillbook.addSkill('test', 'Test', undefined, { helpful: 5 });
 
       skillbook.tagSkill(skill.id, 'helpful', 2);
       const updated = skillbook.getSkill(skill.id);
@@ -104,10 +83,7 @@ describe('Skillbook', () => {
     });
 
     it('should increment harmful counter', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test',
-      });
+      const skill = skillbook.addSkill('test', 'Test');
 
       skillbook.tagSkill(skill.id, 'harmful', 3);
       const updated = skillbook.getSkill(skill.id);
@@ -116,10 +92,7 @@ describe('Skillbook', () => {
     });
 
     it('should throw error for invalid tag', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test',
-      });
+      const skill = skillbook.addSkill('test', 'Test');
 
       expect(() => {
         skillbook.tagSkill(skill.id, 'invalid' as any, 1);
@@ -135,10 +108,7 @@ describe('Skillbook', () => {
 
   describe('removeSkill', () => {
     it('should remove skill from skillbook', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test',
-      });
+      const skill = skillbook.addSkill('test', 'Test');
 
       skillbook.removeSkill(skill.id);
 
@@ -149,10 +119,7 @@ describe('Skillbook', () => {
 
   describe('getSkill', () => {
     it('should retrieve existing skill by ID', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test content',
-      });
+      const skill = skillbook.addSkill('test', 'Test content');
 
       const retrieved = skillbook.getSkill(skill.id);
 
@@ -169,9 +136,9 @@ describe('Skillbook', () => {
 
   describe('skills', () => {
     it('should return all skills', () => {
-      skillbook.addSkill({ section: 'test1', content: 'Content 1' });
-      skillbook.addSkill({ section: 'test2', content: 'Content 2' });
-      skillbook.addSkill({ section: 'test3', content: 'Content 3' });
+      skillbook.addSkill('test1', 'Content 1');
+      skillbook.addSkill('test2', 'Content 2');
+      skillbook.addSkill('test3', 'Content 3');
 
       const allSkills = skillbook.skills();
 
@@ -264,10 +231,7 @@ describe('Skillbook', () => {
 
   describe('asPrompt', () => {
     it('should return JSON string representation', () => {
-      skillbook.addSkill({
-        section: 'test',
-        content: 'Test skill',
-      });
+      skillbook.addSkill('test', 'Test skill');
 
       const prompt = skillbook.asPrompt();
 
@@ -283,16 +247,8 @@ describe('Skillbook', () => {
 
   describe('stats', () => {
     it('should return correct statistics', () => {
-      skillbook.addSkill({
-        section: 'test1',
-        content: 'Skill 1',
-        metadata: { helpful: 5, harmful: 1 },
-      });
-      skillbook.addSkill({
-        section: 'test2',
-        content: 'Skill 2',
-        metadata: { helpful: 3, harmful: 0 },
-      });
+      skillbook.addSkill('test1', 'Skill 1', undefined, { helpful: 5, harmful: 1 });
+      skillbook.addSkill('test2', 'Skill 2', undefined, { helpful: 3, harmful: 0 });
 
       const stats = skillbook.stats();
 
@@ -306,14 +262,8 @@ describe('Skillbook', () => {
 
   describe('toJSON', () => {
     it('should serialize to JSON', () => {
-      const skill1 = skillbook.addSkill({
-        section: 'test',
-        content: 'Test 1',
-      });
-      const skill2 = skillbook.addSkill({
-        section: 'test',
-        content: 'Test 2',
-      });
+      skillbook.addSkill('test', 'Test 1');
+      skillbook.addSkill('test', 'Test 2');
 
       const json = skillbook.toJSON();
 
