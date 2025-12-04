@@ -41,7 +41,7 @@ export class DummyLLMClient extends LLMClient {
     this._responses.push(text);
   }
 
-  async complete(prompt: string, options?: any): Promise<LLMResponse> {
+  async complete(_prompt: string, _options?: any): Promise<LLMResponse> {
     if (this._responses.length === 0) {
       throw new Error('DummyLLMClient ran out of queued responses.');
     }
