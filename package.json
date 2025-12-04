@@ -1,0 +1,51 @@
+{
+  "name": "@kayba/ace-framework",
+  "version": "0.7.0",
+  "description": "Build self-improving AI agents that learn from experience",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "agents",
+    "machine-learning",
+    "self-improvement",
+    "context-engineering",
+    "ace",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt"
+  ],
+  "author": "Kayba.ai <hello@kayba.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kayba-ai/agentic-context-engine-ts"
+  },
+  "dependencies": {
+    "ai": "^4.0.0",
+    "dotenv": "^16.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
