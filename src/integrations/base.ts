@@ -86,8 +86,8 @@
  * - Full training loops: OfflineACE, OnlineACE (adaptation.ts)
  */
 
-import { Skillbook } from '../skillbook.js';
-import { wrapSkillbookForExternalAgent } from '../prompts.js';
+import { Skillbook } from "../skillbook.js";
+import { wrapSkillbookForExternalAgent } from "../prompts.js";
 
 /**
  * Wrap skillbook skills with explanation for external agents.

@@ -741,37 +741,34 @@ export class PromptManager {
 
   private static readonly PROMPTS: PromptVersions = {
     agent: {
-      '1.0': 'ace.prompts.AGENT_PROMPT',
-      '2.0': AGENT_V2_PROMPT,
-      '2.0-math': AGENT_MATH_PROMPT,
-      '2.0-code': AGENT_CODE_PROMPT,
-      '2.1': 'ace.prompts_v2_1.AGENT_V2_1_PROMPT',
-      '2.1-math': 'ace.prompts_v2_1.AGENT_MATH_V2_1_PROMPT',
-      '2.1-code': 'ace.prompts_v2_1.AGENT_CODE_V2_1_PROMPT',
+      "1.0": "ace.prompts.AGENT_PROMPT",
+      "2.0": AGENT_V2_PROMPT,
+      "2.0-math": AGENT_MATH_PROMPT,
+      "2.0-code": AGENT_CODE_PROMPT,
+      "2.1": "ace.prompts_v2_1.AGENT_V2_1_PROMPT",
+      "2.1-math": "ace.prompts_v2_1.AGENT_MATH_V2_1_PROMPT",
+      "2.1-code": "ace.prompts_v2_1.AGENT_CODE_V2_1_PROMPT",
     },
     reflector: {
-      '1.0': 'ace.prompts.REFLECTOR_PROMPT',
-      '2.0': REFLECTOR_V2_PROMPT,
-      '2.1': 'ace.prompts_v2_1.REFLECTOR_V2_1_PROMPT',
+      "1.0": "ace.prompts.REFLECTOR_PROMPT",
+      "2.0": REFLECTOR_V2_PROMPT,
+      "2.1": "ace.prompts_v2_1.REFLECTOR_V2_1_PROMPT",
     },
     skill_manager: {
-      '1.0': 'ace.prompts.SKILL_MANAGER_PROMPT',
-      '2.0': SKILL_MANAGER_V2_PROMPT,
-      '2.1': 'ace.prompts_v2_1.SKILL_MANAGER_V2_1_PROMPT',
+      "1.0": "ace.prompts.SKILL_MANAGER_PROMPT",
+      "2.0": SKILL_MANAGER_V2_PROMPT,
+      "2.1": "ace.prompts_v2_1.SKILL_MANAGER_V2_1_PROMPT",
     },
   };
 
   private defaultVersion: string;
   private usageStats: Record<string, number> = {};
 
-  constructor(defaultVersion: string = '2.0') {
+  constructor(defaultVersion: string = "2.0") {
     this.defaultVersion = defaultVersion;
   }
 
-  getAgentPrompt(options?: {
-    domain?: string;
-    version?: string;
-  }): string {
+  getAgentPrompt(options?: { domain?: string; version?: string }): string {
     const version = options?.version || this.defaultVersion;
     const domain = options?.domain;
 
@@ -783,23 +780,23 @@ export class PromptManager {
     let prompt = PromptManager.PROMPTS.agent[promptKey];
 
     // Handle references to other modules (v1, v2.1)
-    if (prompt?.startsWith('ace.')) {
-      const moduleParts = prompt.split('.');
-      if (moduleParts.includes('prompts_v2_1')) {
+    if (prompt?.startsWith("ace.")) {
+      const moduleParts = prompt.split(".");
+      if (moduleParts.includes("prompts_v2_1")) {
         // Will be handled when prompts_v2_1 is ported
         throw new Error(
-          `prompts_v2_1 not yet ported. Use version 2.0 for now.`
+          `prompts_v2_1 not yet ported. Use version 2.0 for now.`,
         );
       } else {
         // Reference to v1 prompts
-        const { AGENT_PROMPT } = require('./prompts.js');
+        const { AGENT_PROMPT } = require("./prompts.js");
         prompt = AGENT_PROMPT;
       }
     }
 
     if (!prompt) {
       throw new Error(
-        `No agent prompt found for version ${version}, domain ${domain}`
+        `No agent prompt found for version ${version}, domain ${domain}`,
       );
     }
 
@@ -807,8 +804,8 @@ export class PromptManager {
     this._trackUsage(`agent-${promptKey}`);
 
     // Add current date
-    if (prompt.includes('{current_date}')) {
-      const currentDate = new Date().toISOString().split('T')[0];
+    if (prompt.includes("{current_date}")) {
+      const currentDate = new Date().toISOString().split("T")[0];
       prompt = prompt.replace(/{current_date}/g, currentDate);
     }
 
@@ -820,14 +817,14 @@ export class PromptManager {
     let prompt = PromptManager.PROMPTS.reflector[ver];
 
     // Handle references
-    if (prompt?.startsWith('ace.')) {
-      const moduleParts = prompt.split('.');
-      if (moduleParts.includes('prompts_v2_1')) {
+    if (prompt?.startsWith("ace.")) {
+      const moduleParts = prompt.split(".");
+      if (moduleParts.includes("prompts_v2_1")) {
         throw new Error(
-          `prompts_v2_1 not yet ported. Use version 2.0 for now.`
+          `prompts_v2_1 not yet ported. Use version 2.0 for now.`,
         );
       } else {
-        const { REFLECTOR_PROMPT } = require('./prompts.js');
+        const { REFLECTOR_PROMPT } = require("./prompts.js");
         prompt = REFLECTOR_PROMPT;
       }
     }
@@ -845,14 +842,14 @@ export class PromptManager {
     let prompt = PromptManager.PROMPTS.skill_manager[ver];
 
     // Handle references
-    if (prompt?.startsWith('ace.')) {
-      const moduleParts = prompt.split('.');
-      if (moduleParts.includes('prompts_v2_1')) {
+    if (prompt?.startsWith("ace.")) {
+      const moduleParts = prompt.split(".");
+      if (moduleParts.includes("prompts_v2_1")) {
         throw new Error(
-          `prompts_v2_1 not yet ported. Use version 2.0 for now.`
+          `prompts_v2_1 not yet ported. Use version 2.0 for now.`,
         );
       } else {
-        const { SKILL_MANAGER_PROMPT } = require('./prompts.js');
+        const { SKILL_MANAGER_PROMPT } = require("./prompts.js");
         prompt = SKILL_MANAGER_PROMPT;
       }
     }
@@ -893,7 +890,7 @@ export interface ValidationResult {
 
 export function validatePromptOutput(
   output: string,
-  role: 'agent' | 'generator' | 'reflector' | 'skill_manager' | 'curator'
+  role: "agent" | "generator" | "reflector" | "skill_manager" | "curator",
 ): ValidationResult {
   const errors: string[] = [];
 
@@ -907,8 +904,8 @@ export function validatePromptOutput(
   }
 
   // Role-specific validation
-  if (role === 'agent' || role === 'generator') {
-    const required = ['reasoning', 'skill_ids', 'final_answer'];
+  if (role === "agent" || role === "generator") {
+    const required = ["reasoning", "skill_ids", "final_answer"];
     for (const field of required) {
       if (!(field in data)) {
         errors.push(`Missing required field: ${field}`);
@@ -917,13 +914,13 @@ export function validatePromptOutput(
 
     if (data.confidence_scores) {
       for (const [_id, score] of Object.entries(data.confidence_scores)) {
-        if (typeof score !== 'number' || score < 0 || score > 1) {
+        if (typeof score !== "number" || score < 0 || score > 1) {
           errors.push(`Invalid confidence score: ${score}`);
         }
       }
     }
-  } else if (role === 'reflector') {
-    const required = ['reasoning', 'error_identification', 'skill_tags'];
+  } else if (role === "reflector") {
+    const required = ["reasoning", "error_identification", "skill_tags"];
     for (const field of required) {
       if (!(field in data)) {
         errors.push(`Missing required field: ${field}`);
@@ -931,14 +928,14 @@ export function validatePromptOutput(
     }
 
     for (const tag of data.skill_tags || []) {
-      if (!['helpful', 'harmful', 'neutral'].includes(tag.tag)) {
+      if (!["helpful", "harmful", "neutral"].includes(tag.tag)) {
         errors.push(
-          `Invalid tag: ${tag.tag} - only 'helpful', 'harmful', 'neutral' allowed`
+          `Invalid tag: ${tag.tag} - only 'helpful', 'harmful', 'neutral' allowed`,
         );
       }
     }
-  } else if (role === 'skill_manager' || role === 'curator') {
-    const required = ['reasoning', 'operations'];
+  } else if (role === "skill_manager" || role === "curator") {
+    const required = ["reasoning", "operations"];
     for (const field of required) {
       if (!(field in data)) {
         errors.push(`Missing required field: ${field}`);
@@ -946,7 +943,7 @@ export function validatePromptOutput(
     }
 
     for (const op of data.operations || []) {
-      if (!['ADD', 'UPDATE', 'TAG', 'REMOVE'].includes(op.type)) {
+      if (!["ADD", "UPDATE", "TAG", "REMOVE"].includes(op.type)) {
         errors.push(`Invalid operation type: ${op.type}`);
       }
     }
@@ -1021,6 +1018,6 @@ const customPrompt = AGENT_V2_PROMPT.replace(
 
 // Emit deprecation warning
 console.warn(
-  'prompts_v2 is deprecated and will be removed in a future version. ' +
-    'Please use prompts_v2_1 instead for enhanced performance and features.'
+  "prompts_v2 is deprecated and will be removed in a future version. " +
+    "Please use prompts_v2_1 instead for enhanced performance and features.",
 );

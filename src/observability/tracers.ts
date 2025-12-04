@@ -36,7 +36,7 @@ try {
 export function maybeTrack<F extends AnyFunction>(
   name?: string,
   tags?: string[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): (func: F) => F {
   return function decorator(func: F): F {
     // First check: is Opik installed?
@@ -56,7 +56,7 @@ export function maybeTrack<F extends AnyFunction>(
       return track({ name, tags, ...options })(func) as F;
     } catch (e) {
       console.warn(
-        `Failed to apply Opik tracking to ${func.name}: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to apply Opik tracking to ${func.name}: ${e instanceof Error ? e.message : String(e)}`,
       );
       return func;
     }
@@ -92,7 +92,7 @@ function _shouldSkipOpik(): boolean {
 export function trackRole<F extends AnyFunction>(
   name?: string,
   tags?: string[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): (func: F) => F {
   return maybeTrack<F>(name, tags, options);
 }
@@ -103,7 +103,7 @@ export function trackRole<F extends AnyFunction>(
 export function aceTrack<F extends AnyFunction>(
   name?: string,
   tags?: string[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): (func: F) => F {
   return maybeTrack<F>(name, tags, options);
 }

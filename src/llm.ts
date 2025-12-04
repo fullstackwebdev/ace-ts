@@ -3,8 +3,8 @@
  * Uses Vercel AI SDK for TypeScript instead of LiteLLM.
  */
 
-import { generateText, LanguageModel } from 'ai';
-import { z } from 'zod';
+import { generateText, LanguageModel } from "ai";
+import { z } from "zod";
 
 export interface LLMResponse {
   /** Container for LLM outputs */
@@ -32,7 +32,7 @@ export class DummyLLMClient extends LLMClient {
   private _responses: string[] = [];
 
   constructor(responses?: string[]) {
-    super('dummy');
+    super("dummy");
     this._responses = responses ?? [];
   }
 
@@ -43,7 +43,7 @@ export class DummyLLMClient extends LLMClient {
 
   async complete(_prompt: string, _options?: any): Promise<LLMResponse> {
     if (this._responses.length === 0) {
-      throw new Error('DummyLLMClient ran out of queued responses.');
+      throw new Error("DummyLLMClient ran out of queued responses.");
     }
     const text = this._responses.shift()!;
     return { text };
@@ -52,7 +52,7 @@ export class DummyLLMClient extends LLMClient {
   async completeStructured<T>(
     _prompt: string,
     schema: z.ZodType<T>,
-    _options?: any
+    _options?: any,
   ): Promise<T> {
     /**
      * Mock structured output - parses JSON and validates with Zod.
@@ -60,7 +60,7 @@ export class DummyLLMClient extends LLMClient {
      * This prevents roles from auto-wrapping with real structured output.
      */
     if (this._responses.length === 0) {
-      throw new Error('DummyLLMClient ran out of queued responses.');
+      throw new Error("DummyLLMClient ran out of queued responses.");
     }
 
     const response = this._responses.shift()!;
@@ -79,10 +79,7 @@ export class VercelAIClient extends LLMClient {
   private languageModel: LanguageModel;
   private defaultOptions: any;
 
-  constructor(params: {
-    model: LanguageModel;
-    defaultOptions?: any;
-  }) {
+  constructor(params: { model: LanguageModel; defaultOptions?: any }) {
     super();
     this.languageModel = params.model;
     this.defaultOptions = params.defaultOptions ?? {};
@@ -106,13 +103,13 @@ export class VercelAIClient extends LLMClient {
   async completeStructured<T>(
     prompt: string,
     schema: z.ZodType<T>,
-    options?: any
+    options?: any,
   ): Promise<T> {
     /**
      * Structured output using Vercel AI SDK's generateObject.
      */
     // Dynamic import to avoid circular dependency
-    const { generateObject } = await import('ai');
+    const { generateObject } = await import("ai");
 
     const mergedOptions = { ...this.defaultOptions, ...options };
 
@@ -132,7 +129,7 @@ export class VercelAIClient extends LLMClient {
  * This is a convenience wrapper around Vercel AI SDK providers.
  */
 export async function createLLMClient(params: {
-  provider: 'openai' | 'anthropic' | 'google' | 'custom';
+  provider: "openai" | "anthropic" | "google" | "custom";
   model: string;
   apiKey?: string;
   options?: any;
@@ -140,32 +137,34 @@ export async function createLLMClient(params: {
   let languageModel: any; // Accept both LanguageModelV1 and LanguageModelV2
 
   switch (params.provider) {
-    case 'openai': {
-      const { createOpenAI } = await import('@ai-sdk/openai');
+    case "openai": {
+      const { createOpenAI } = await import("@ai-sdk/openai");
       const openaiClient = createOpenAI({
         apiKey: params.apiKey,
       });
       languageModel = openaiClient(params.model);
       break;
     }
-    case 'anthropic': {
-      const { createAnthropic } = await import('@ai-sdk/anthropic');
+    case "anthropic": {
+      const { createAnthropic } = await import("@ai-sdk/anthropic");
       const anthropicClient = createAnthropic({
         apiKey: params.apiKey,
       });
       languageModel = anthropicClient(params.model);
       break;
     }
-    case 'google': {
-      const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
+    case "google": {
+      const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
       const googleClient = createGoogleGenerativeAI({
         apiKey: params.apiKey,
       });
       languageModel = googleClient(params.model);
       break;
     }
-    case 'custom': {
-      throw new Error('Custom provider not yet implemented. Please provide a LanguageModel directly.');
+    case "custom": {
+      throw new Error(
+        "Custom provider not yet implemented. Please provide a LanguageModel directly.",
+      );
     }
   }
 

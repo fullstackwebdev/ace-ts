@@ -4,19 +4,19 @@
  * These tests verify the complete workflow from sample → generate → reflect → update skills.
  */
 
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 import {
   OfflineACE,
   OnlineACE,
   Sample,
   TaskEnvironment,
   EnvironmentResult,
-} from '../src/adaptation';
-import { Agent, Reflector, SkillManager, AgentOutput } from '../src/roles';
-import { Skillbook } from '../src/skillbook';
-import { LLMClient, LLMResponse } from '../src/llm';
+} from "../src/adaptation";
+import { Agent, Reflector, SkillManager, AgentOutput } from "../src/roles";
+import { Skillbook } from "../src/skillbook";
+import { LLMClient, LLMResponse } from "../src/llm";
 
 /**
  * Mock LLM that returns valid JSON responses for testing.
@@ -35,46 +35,46 @@ class MockLLMClient extends LLMClient {
     // v2.1 prompts use "ACE Reflector", "ACE SkillManager", "ACE Agent"
     let response: string;
 
-    if (prompt.includes('ACE Reflector') || prompt.includes('Reflector')) {
+    if (prompt.includes("ACE Reflector") || prompt.includes("Reflector")) {
       response = JSON.stringify({
-        analysis: 'Mock analysis of the outcome',
+        analysis: "Mock analysis of the outcome",
         helpful_skill_ids: [],
         harmful_skill_ids: [],
         new_learnings: [
           {
-            section: 'testing',
-            content: 'Test strategy learned',
+            section: "testing",
+            content: "Test strategy learned",
             atomicity_score: 8,
           },
         ],
       });
     } else if (
-      prompt.includes('ACE SkillManager') ||
-      prompt.includes('SkillManager') ||
-      prompt.toLowerCase().includes('update')
+      prompt.includes("ACE SkillManager") ||
+      prompt.includes("SkillManager") ||
+      prompt.toLowerCase().includes("update")
     ) {
       response = JSON.stringify({
-        reasoning: 'Adding learned strategy',
+        reasoning: "Adding learned strategy",
         operations: [
           {
-            type: 'ADD',
-            section: 'testing',
-            content: 'Test strategy learned',
+            type: "ADD",
+            section: "testing",
+            content: "Test strategy learned",
           },
         ],
       });
     } else if (
-      prompt.includes('ACE Agent') ||
-      prompt.includes('Agent') ||
-      prompt.includes('skill_ids')
+      prompt.includes("ACE Agent") ||
+      prompt.includes("Agent") ||
+      prompt.includes("skill_ids")
     ) {
       response = JSON.stringify({
-        reasoning: 'Mock reasoning',
-        final_answer: 'This is a correct mock answer',
+        reasoning: "Mock reasoning",
+        final_answer: "This is a correct mock answer",
         skill_ids: [],
       });
     } else {
-      response = JSON.stringify({ result: 'Mock result' });
+      response = JSON.stringify({ result: "Mock result" });
     }
 
     return { text: response };
@@ -87,17 +87,15 @@ class MockLLMClient extends LLMClient {
 class SimpleTestEnvironment implements TaskEnvironment {
   evaluate(_sample: Sample, agentOutput: AgentOutput): EnvironmentResult {
     const answer = agentOutput.final_answer;
-    const success = answer.toLowerCase().includes('correct');
-    const feedback = success
-      ? "✓ Contains 'correct'"
-      : "✗ Missing 'correct'";
+    const success = answer.toLowerCase().includes("correct");
+    const feedback = success ? "✓ Contains 'correct'" : "✗ Missing 'correct'";
 
     return {
       feedback,
       groundTruth: "The answer should contain 'correct'",
       metrics: {
         success: success ? 1.0 : 0.0,
-        answer_length: answer.length
+        answer_length: answer.length,
       },
     };
   }
@@ -107,7 +105,7 @@ class SimpleTestEnvironment implements TaskEnvironment {
  * Test helper to create a temporary directory.
  */
 function createTempDir(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'ace-test-'));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "ace-test-"));
 }
 
 /**
@@ -119,7 +117,7 @@ function cleanupTempDir(dir: string): void {
   }
 }
 
-describe('Integration: Offline Adaptation', () => {
+describe("Integration: Offline Adaptation", () => {
   let llm: MockLLMClient;
   let skillbook: Skillbook;
   let environment: SimpleTestEnvironment;
@@ -130,7 +128,7 @@ describe('Integration: Offline Adaptation', () => {
     environment = new SimpleTestEnvironment();
   });
 
-  test('single sample adaptation', async () => {
+  test("single sample adaptation", async () => {
     // Create adapter
     const adapter = new OfflineACE({
       skillbook,
@@ -142,9 +140,9 @@ describe('Integration: Offline Adaptation', () => {
     // Create sample
     const samples: Sample[] = [
       {
-        question: 'What is 2+2?',
-        context: 'Simple math',
-        groundTruth: '4',
+        question: "What is 2+2?",
+        context: "Simple math",
+        groundTruth: "4",
       },
     ];
 
@@ -159,7 +157,7 @@ describe('Integration: Offline Adaptation', () => {
     expect(results[0].environmentResult).toBeDefined();
   });
 
-  test('multi-sample adaptation', async () => {
+  test("multi-sample adaptation", async () => {
     const adapter = new OfflineACE({
       skillbook,
       agent: new Agent(llm),
@@ -169,7 +167,7 @@ describe('Integration: Offline Adaptation', () => {
 
     const samples: Sample[] = Array.from({ length: 5 }, (_, i) => ({
       question: `Question ${i}`,
-      context: '',
+      context: "",
       groundTruth: String(i),
     }));
 
@@ -182,7 +180,7 @@ describe('Integration: Offline Adaptation', () => {
     }
   });
 
-  test('multi-epoch training', async () => {
+  test("multi-epoch training", async () => {
     const adapter = new OfflineACE({
       skillbook,
       agent: new Agent(llm),
@@ -191,8 +189,8 @@ describe('Integration: Offline Adaptation', () => {
     });
 
     const samples: Sample[] = [
-      { question: 'Q1', context: '', groundTruth: 'A1' },
-      { question: 'Q2', context: '', groundTruth: 'A2' },
+      { question: "Q1", context: "", groundTruth: "A1" },
+      { question: "Q2", context: "", groundTruth: "A2" },
     ];
 
     // Run 3 epochs
@@ -208,7 +206,7 @@ describe('Integration: Offline Adaptation', () => {
     expect(results[5].epoch).toBe(3);
   });
 
-  test('skillbook evolution', async () => {
+  test("skillbook evolution", async () => {
     const initialSkills = skillbook.skills().length;
 
     const adapter = new OfflineACE({
@@ -218,7 +216,9 @@ describe('Integration: Offline Adaptation', () => {
       skillManager: new SkillManager(llm),
     });
 
-    const samples: Sample[] = [{ question: 'Q1', context: '', groundTruth: 'A1' }];
+    const samples: Sample[] = [
+      { question: "Q1", context: "", groundTruth: "A1" },
+    ];
 
     await adapter.run(samples, environment, { epochs: 1 });
 
@@ -227,7 +227,7 @@ describe('Integration: Offline Adaptation', () => {
     expect(finalSkills).toBeGreaterThanOrEqual(initialSkills);
   });
 
-  test('checkpoint functionality', async () => {
+  test("checkpoint functionality", async () => {
     const tmpDir = createTempDir();
 
     try {
@@ -240,7 +240,7 @@ describe('Integration: Offline Adaptation', () => {
 
       const samples: Sample[] = Array.from({ length: 5 }, (_, i) => ({
         question: `Q${i}`,
-        context: '',
+        context: "",
         groundTruth: `A${i}`,
       }));
 
@@ -253,7 +253,7 @@ describe('Integration: Offline Adaptation', () => {
 
       // Check that checkpoints were created
       const files = fs.readdirSync(tmpDir);
-      const checkpoints = files.filter((f) => f.endsWith('.json'));
+      const checkpoints = files.filter((f) => f.endsWith(".json"));
       expect(checkpoints.length).toBeGreaterThan(0);
     } finally {
       cleanupTempDir(tmpDir);
@@ -261,7 +261,7 @@ describe('Integration: Offline Adaptation', () => {
   });
 });
 
-describe('Integration: Online Adaptation', () => {
+describe("Integration: Online Adaptation", () => {
   let llm: MockLLMClient;
   let skillbook: Skillbook;
   let environment: SimpleTestEnvironment;
@@ -272,7 +272,7 @@ describe('Integration: Online Adaptation', () => {
     environment = new SimpleTestEnvironment();
   });
 
-  test('single sample online', async () => {
+  test("single sample online", async () => {
     const adapter = new OnlineACE({
       skillbook,
       agent: new Agent(llm),
@@ -282,9 +282,9 @@ describe('Integration: Online Adaptation', () => {
 
     const samples: Sample[] = [
       {
-        question: 'What is online adaptation?',
-        context: '',
-        groundTruth: '',
+        question: "What is online adaptation?",
+        context: "",
+        groundTruth: "",
       },
     ];
 
@@ -294,7 +294,7 @@ describe('Integration: Online Adaptation', () => {
     expect(results[0].agentOutput).toBeDefined();
   });
 
-  test('sequential online adaptation', async () => {
+  test("sequential online adaptation", async () => {
     const adapter = new OnlineACE({
       skillbook,
       agent: new Agent(llm),
@@ -304,8 +304,8 @@ describe('Integration: Online Adaptation', () => {
 
     const samples: Sample[] = Array.from({ length: 3 }, (_, i) => ({
       question: `Q${i}`,
-      context: '',
-      groundTruth: '',
+      context: "",
+      groundTruth: "",
     }));
 
     const results = await adapter.run(samples, environment);
@@ -318,21 +318,19 @@ describe('Integration: Online Adaptation', () => {
   });
 });
 
-describe('Integration: Skillbook Persistence', () => {
-  test('save/load roundtrip', () => {
+describe("Integration: Skillbook Persistence", () => {
+  test("save/load roundtrip", () => {
     const tmpDir = createTempDir();
 
     try {
-      const skillbookPath = path.join(tmpDir, 'test_skillbook.json');
+      const skillbookPath = path.join(tmpDir, "test_skillbook.json");
 
       // Create skillbook with skills
       const original = new Skillbook();
-      original.addSkill(
-        'Testing',
-        'Test strategy',
-        'b1',
-        { helpful: 5, harmful: 1 }
-      );
+      original.addSkill("Testing", "Test strategy", "b1", {
+        helpful: 5,
+        harmful: 1,
+      });
 
       // Save
       original.saveToFile(skillbookPath);
@@ -342,18 +340,18 @@ describe('Integration: Skillbook Persistence', () => {
 
       // Verify
       expect(loaded.skills()).toHaveLength(original.skills().length);
-      expect(loaded.skills()[0].content).toBe('Test strategy');
+      expect(loaded.skills()[0].content).toBe("Test strategy");
       expect(loaded.skills()[0].helpful).toBe(5);
     } finally {
       cleanupTempDir(tmpDir);
     }
   });
 
-  test('evolved skillbook persistence', async () => {
+  test("evolved skillbook persistence", async () => {
     const tmpDir = createTempDir();
 
     try {
-      const skillbookPath = path.join(tmpDir, 'evolved_skillbook.json');
+      const skillbookPath = path.join(tmpDir, "evolved_skillbook.json");
 
       // Train adapter
       const llm = new MockLLMClient();
@@ -369,9 +367,9 @@ describe('Integration: Skillbook Persistence', () => {
 
       const samples: Sample[] = [
         {
-          question: 'Train Q',
-          context: '',
-          groundTruth: '',
+          question: "Train Q",
+          context: "",
+          groundTruth: "",
         },
       ];
 
@@ -391,7 +389,7 @@ describe('Integration: Skillbook Persistence', () => {
 
       // Verify it works
       const testSamples: Sample[] = [
-        { question: 'Test Q', context: '', groundTruth: '' },
+        { question: "Test Q", context: "", groundTruth: "" },
       ];
       const results = await newAdapter.run(testSamples, environment, {
         epochs: 1,
@@ -404,19 +402,19 @@ describe('Integration: Skillbook Persistence', () => {
   });
 });
 
-describe('Integration: Error Recovery', () => {
-  test('failed sample skipping', async () => {
+describe("Integration: Error Recovery", () => {
+  test("failed sample skipping", async () => {
     /**
      * Environment that fails on specific questions.
      */
     class FailingEnvironment implements TaskEnvironment {
       evaluate(sample: Sample, _agentOutput: AgentOutput): EnvironmentResult {
-        if (sample.question.toLowerCase().includes('fail')) {
-          throw new Error('Simulated evaluation failure');
+        if (sample.question.toLowerCase().includes("fail")) {
+          throw new Error("Simulated evaluation failure");
         }
         return {
-          feedback: 'OK',
-          groundTruth: '',
+          feedback: "OK",
+          groundTruth: "",
           metrics: { success: 1.0 },
         };
       }
@@ -434,9 +432,9 @@ describe('Integration: Error Recovery', () => {
     });
 
     const samples: Sample[] = [
-      { question: 'Good Q1', context: '', groundTruth: '' },
-      { question: 'FAIL this', context: '', groundTruth: '' },
-      { question: 'Good Q2', context: '', groundTruth: '' },
+      { question: "Good Q1", context: "", groundTruth: "" },
+      { question: "FAIL this", context: "", groundTruth: "" },
+      { question: "Good Q2", context: "", groundTruth: "" },
     ];
 
     // Should skip failed sample and continue
@@ -444,7 +442,7 @@ describe('Integration: Error Recovery', () => {
 
     // Should process 2 successful samples (skip 1 failed)
     expect(results).toHaveLength(2);
-    expect(results[0].sample.question).toBe('Good Q1');
-    expect(results[1].sample.question).toBe('Good Q2');
+    expect(results[0].sample.question).toBe("Good Q1");
+    expect(results[1].sample.question).toBe("Good Q2");
   });
 });

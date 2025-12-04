@@ -2,7 +2,7 @@
  * Prompts and report generation for skill deduplication.
  */
 
-import type { Skill } from '../skillbook.js';
+import type { Skill } from "../skillbook.js";
 
 const SIMILARITY_REPORT_HEADER = `
 ## Similar Skills Detected
@@ -26,7 +26,7 @@ const PAIR_TEMPLATE = `### Pair {index}: {similarity} similar
 `;
 
 export function generateSimilarityReport(
-  similarPairs: Array<[Skill, Skill, number]>
+  similarPairs: Array<[Skill, Skill, number]>,
 ): string {
   /**
    * Generate a human-readable similarity report for the SkillManager.
@@ -38,7 +38,7 @@ export function generateSimilarityReport(
    *   Formatted report string to include in SkillManager prompt
    */
   if (!similarPairs || similarPairs.length === 0) {
-    return '';
+    return "";
   }
 
   const parts: string[] = [SIMILARITY_REPORT_HEADER];
@@ -48,16 +48,16 @@ export function generateSimilarityReport(
     const formattedSimilarity = `${Math.round(similarity * 100)}%`;
 
     let pairText = PAIR_TEMPLATE;
-    pairText = pairText.replace('{index}', (i + 1).toString());
-    pairText = pairText.replace('{similarity}', formattedSimilarity);
-    pairText = pairText.replace('{id_a}', skillA.id);
-    pairText = pairText.replace('{helpful_a}', skillA.helpful.toString());
-    pairText = pairText.replace('{harmful_a}', skillA.harmful.toString());
-    pairText = pairText.replace('{content_a}', skillA.content);
-    pairText = pairText.replace('{id_b}', skillB.id);
-    pairText = pairText.replace('{helpful_b}', skillB.helpful.toString());
-    pairText = pairText.replace('{harmful_b}', skillB.harmful.toString());
-    pairText = pairText.replace('{content_b}', skillB.content);
+    pairText = pairText.replace("{index}", (i + 1).toString());
+    pairText = pairText.replace("{similarity}", formattedSimilarity);
+    pairText = pairText.replace("{id_a}", skillA.id);
+    pairText = pairText.replace("{helpful_a}", skillA.helpful.toString());
+    pairText = pairText.replace("{harmful_a}", skillA.harmful.toString());
+    pairText = pairText.replace("{content_a}", skillA.content);
+    pairText = pairText.replace("{id_b}", skillB.id);
+    pairText = pairText.replace("{helpful_b}", skillB.helpful.toString());
+    pairText = pairText.replace("{harmful_b}", skillB.harmful.toString());
+    pairText = pairText.replace("{content_b}", skillB.content);
 
     parts.push(pairText);
   }
@@ -108,13 +108,13 @@ Each operation should have a \`type\` field and relevant fields for that type:
 
 `);
 
-  return parts.join('');
+  return parts.join("");
 }
 
 export function formatPairForLogging(
   skillA: Skill,
   skillB: Skill,
-  similarity: number
+  similarity: number,
 ): string {
   /**
    * Format a single pair for logging output.

@@ -2,10 +2,10 @@
  * Similarity detection for skill deduplication.
  */
 
-import type { Skill, Skillbook } from '../skillbook.js';
-import { hasVercelAI, hasNumpy, hasSentenceTransformers } from '../features.js';
-import type { DeduplicationConfig } from './config.js';
-import { createDeduplicationConfig } from './config.js';
+import type { Skill, Skillbook } from "../skillbook.js";
+import { hasVercelAI, hasNumpy, hasSentenceTransformers } from "../features.js";
+import type { DeduplicationConfig } from "./config.js";
+import { createDeduplicationConfig } from "./config.js";
 
 const logger = {
   info: (msg: string) => console.log(`[INFO] ${msg}`),
@@ -34,14 +34,16 @@ export class SimilarityDetector {
      * Returns:
      *   Embedding vector as array of numbers, or null if embedding fails
      */
-    if (this.config.embeddingProvider === 'vercel-ai') {
+    if (this.config.embeddingProvider === "vercel-ai") {
       return this._computeEmbeddingVercelAI(text);
     } else {
       return this._computeEmbeddingSentenceTransformers(text);
     }
   }
 
-  async computeEmbeddingsBatch(texts: string[]): Promise<Array<number[] | null>> {
+  async computeEmbeddingsBatch(
+    texts: string[],
+  ): Promise<Array<number[] | null>> {
     /**
      * Compute embeddings for multiple texts (more efficient).
      *
@@ -55,25 +57,27 @@ export class SimilarityDetector {
       return [];
     }
 
-    if (this.config.embeddingProvider === 'vercel-ai') {
+    if (this.config.embeddingProvider === "vercel-ai") {
       return this._computeEmbeddingsBatchVercelAI(texts);
     } else {
       return this._computeEmbeddingsBatchSentenceTransformers(texts);
     }
   }
 
-  private async _computeEmbeddingVercelAI(text: string): Promise<number[] | null> {
+  private async _computeEmbeddingVercelAI(
+    text: string,
+  ): Promise<number[] | null> {
     /**
      * Compute embedding using Vercel AI SDK.
      */
     if (!hasVercelAI()) {
-      logger.warning('Vercel AI SDK not available for embeddings');
+      logger.warning("Vercel AI SDK not available for embeddings");
       return null;
     }
 
     try {
-      const { embed } = await import('ai');
-      const { openai } = await import('@ai-sdk/openai');
+      const { embed } = await import("ai");
+      const { openai } = await import("@ai-sdk/openai");
 
       const model = openai.embedding(this.config.embeddingModel);
       const result = await embed({
@@ -89,19 +93,19 @@ export class SimilarityDetector {
   }
 
   private async _computeEmbeddingsBatchVercelAI(
-    texts: string[]
+    texts: string[],
   ): Promise<Array<number[] | null>> {
     /**
      * Batch compute embeddings using Vercel AI SDK.
      */
     if (!hasVercelAI()) {
-      logger.warning('Vercel AI SDK not available for embeddings');
+      logger.warning("Vercel AI SDK not available for embeddings");
       return texts.map(() => null);
     }
 
     try {
-      const { embedMany } = await import('ai');
-      const { openai } = await import('@ai-sdk/openai');
+      const { embedMany } = await import("ai");
+      const { openai } = await import("@ai-sdk/openai");
 
       const model = openai.embedding(this.config.embeddingModel);
       const result = await embedMany({
@@ -111,19 +115,21 @@ export class SimilarityDetector {
 
       return result.embeddings;
     } catch (e: any) {
-      logger.warning(`Failed to compute batch embeddings via Vercel AI: ${e.message}`);
+      logger.warning(
+        `Failed to compute batch embeddings via Vercel AI: ${e.message}`,
+      );
       return texts.map(() => null);
     }
   }
 
   private async _computeEmbeddingSentenceTransformers(
-    text: string
+    text: string,
   ): Promise<number[] | null> {
     /**
      * Compute embedding using sentence-transformers (local).
      */
     if (!hasSentenceTransformers()) {
-      logger.warning('sentence-transformers not available for embeddings');
+      logger.warning("sentence-transformers not available for embeddings");
       return null;
     }
 
@@ -133,20 +139,20 @@ export class SimilarityDetector {
       return Array.from(embedding);
     } catch (e: any) {
       logger.warning(
-        `Failed to compute embedding via sentence-transformers: ${e.message}`
+        `Failed to compute embedding via sentence-transformers: ${e.message}`,
       );
       return null;
     }
   }
 
   private async _computeEmbeddingsBatchSentenceTransformers(
-    texts: string[]
+    texts: string[],
   ): Promise<Array<number[] | null>> {
     /**
      * Batch compute embeddings using sentence-transformers.
      */
     if (!hasSentenceTransformers()) {
-      logger.warning('sentence-transformers not available for embeddings');
+      logger.warning("sentence-transformers not available for embeddings");
       return texts.map(() => null);
     }
 
@@ -156,7 +162,7 @@ export class SimilarityDetector {
       return embeddings.map((emb: any) => Array.from(emb));
     } catch (e: any) {
       logger.warning(
-        `Failed to compute batch embeddings via sentence-transformers: ${e.message}`
+        `Failed to compute batch embeddings via sentence-transformers: ${e.message}`,
       );
       return texts.map(() => null);
     }
@@ -168,7 +174,7 @@ export class SimilarityDetector {
      */
     if (this._model === null) {
       // @ts-ignore - sentence-transformers is an optional dependency
-      const { SentenceTransformer } = await import('sentence-transformers');
+      const { SentenceTransformer } = await import("sentence-transformers");
       this._model = new SentenceTransformer(this.config.localModelName);
     }
     return this._model;
@@ -277,7 +283,7 @@ export class SimilarityDetector {
 
   async detectSimilarPairs(
     skillbook: Skillbook,
-    threshold?: number
+    threshold?: number,
   ): Promise<Array<[Skill, Skill, number]>> {
     /**
      * Find all pairs of skills with similarity >= threshold.
@@ -306,12 +312,16 @@ export class SimilarityDetector {
       }
 
       for (const sectionSkills of sections.values()) {
-        const pairs = this._findSimilarInList(sectionSkills, skillbook, thresholdValue);
+        const pairs = this._findSimilarInList(
+          sectionSkills,
+          skillbook,
+          thresholdValue,
+        );
         similarPairs.push(...pairs);
       }
     } else {
       similarPairs.push(
-        ...this._findSimilarInList(skills, skillbook, thresholdValue)
+        ...this._findSimilarInList(skills, skillbook, thresholdValue),
       );
     }
 
@@ -323,7 +333,7 @@ export class SimilarityDetector {
   private _findSimilarInList(
     skills: Skill[],
     skillbook: Skillbook,
-    threshold: number
+    threshold: number,
   ): Array<[Skill, Skill, number]> {
     /**
      * Find similar pairs within a list of skills.
@@ -347,7 +357,10 @@ export class SimilarityDetector {
           continue;
         }
 
-        const similarity = this.cosineSimilarity(skillA.embedding, skillB.embedding);
+        const similarity = this.cosineSimilarity(
+          skillA.embedding,
+          skillB.embedding,
+        );
 
         if (similarity >= threshold) {
           pairs.push([skillA, skillB, similarity]);

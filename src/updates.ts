@@ -2,7 +2,7 @@
  * Update operations produced by the ACE SkillManager.
  */
 
-export type OperationType = 'ADD' | 'UPDATE' | 'TAG' | 'REMOVE';
+export type OperationType = "ADD" | "UPDATE" | "TAG" | "REMOVE";
 
 export interface UpdateOperation {
   /** Single mutation to apply to the skillbook */
@@ -29,39 +29,45 @@ export function createUpdateOperation(params: {
   };
 }
 
-export function updateOperationFromJSON(payload: Record<string, any>): UpdateOperation {
+export function updateOperationFromJSON(
+  payload: Record<string, any>,
+): UpdateOperation {
   // Filter metadata for TAG operations to only include valid tags
   let metadata: Record<string, number> = payload.metadata ?? {};
 
   const opType = String(payload.type).toUpperCase();
-  if (opType === 'TAG') {
+  if (opType === "TAG") {
     // Only include valid tag names for TAG operations
-    const validTags = new Set(['helpful', 'harmful', 'neutral']);
+    const validTags = new Set(["helpful", "harmful", "neutral"]);
     metadata = Object.fromEntries(
-      Object.entries(metadata).filter(([k]) => validTags.has(k))
+      Object.entries(metadata).filter(([k]) => validTags.has(k)),
     );
   }
 
-  if (!['ADD', 'UPDATE', 'TAG', 'REMOVE'].includes(opType)) {
+  if (!["ADD", "UPDATE", "TAG", "REMOVE"].includes(opType)) {
     throw new Error(`Invalid operation type: ${opType}`);
   }
 
   return {
     type: opType as OperationType,
-    section: String(payload.section ?? ''),
-    content: payload.content !== undefined && payload.content !== null
-      ? String(payload.content)
-      : undefined,
-    skill_id: payload.skill_id !== undefined && payload.skill_id !== null
-      ? String(payload.skill_id)
-      : undefined,
+    section: String(payload.section ?? ""),
+    content:
+      payload.content !== undefined && payload.content !== null
+        ? String(payload.content)
+        : undefined,
+    skill_id:
+      payload.skill_id !== undefined && payload.skill_id !== null
+        ? String(payload.skill_id)
+        : undefined,
     metadata: Object.fromEntries(
-      Object.entries(metadata).map(([k, v]) => [String(k), Number(v)])
+      Object.entries(metadata).map(([k, v]) => [String(k), Number(v)]),
     ),
   };
 }
 
-export function updateOperationToJSON(operation: UpdateOperation): Record<string, any> {
+export function updateOperationToJSON(
+  operation: UpdateOperation,
+): Record<string, any> {
   const data: Record<string, any> = {
     type: operation.type,
     section: operation.section,
@@ -102,14 +108,14 @@ export function updateBatchFromJSON(payload: Record<string, any>): UpdateBatch {
 
   if (Array.isArray(opsPayload)) {
     for (const item of opsPayload) {
-      if (typeof item === 'object' && item !== null) {
+      if (typeof item === "object" && item !== null) {
         operations.push(updateOperationFromJSON(item));
       }
     }
   }
 
   return {
-    reasoning: String(payload.reasoning ?? ''),
+    reasoning: String(payload.reasoning ?? ""),
     operations,
   };
 }
@@ -117,6 +123,6 @@ export function updateBatchFromJSON(payload: Record<string, any>): UpdateBatch {
 export function updateBatchToJSON(batch: UpdateBatch): Record<string, any> {
   return {
     reasoning: batch.reasoning,
-    operations: batch.operations.map(op => updateOperationToJSON(op)),
+    operations: batch.operations.map((op) => updateOperationToJSON(op)),
   };
 }

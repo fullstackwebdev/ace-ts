@@ -2,13 +2,13 @@
  * Skillbook storage and mutation logic for ACE.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { dirname } from 'path';
-import { UpdateBatch, UpdateOperation } from './updates.js';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { dirname } from "path";
+import { UpdateBatch, UpdateOperation } from "./updates.js";
 
 export interface SimilarityDecision {
   /** Record of a SkillManager decision to KEEP two skills separate */
-  decision: 'KEEP';
+  decision: "KEEP";
   reasoning: string;
   decided_at: string;
   similarity_at_decision: number;
@@ -26,7 +26,7 @@ export interface Skill {
   updated_at: string;
   /** Deduplication fields */
   embedding?: number[];
-  status: 'active' | 'invalid';
+  status: "active" | "invalid";
 }
 
 export function createSkill(params: {
@@ -37,7 +37,7 @@ export function createSkill(params: {
   harmful?: number;
   neutral?: number;
   embedding?: number[];
-  status?: 'active' | 'invalid';
+  status?: "active" | "invalid";
 }): Skill {
   const now = new Date().toISOString();
   return {
@@ -50,11 +50,14 @@ export function createSkill(params: {
     created_at: now,
     updated_at: now,
     embedding: params.embedding,
-    status: params.status ?? 'active',
+    status: params.status ?? "active",
   };
 }
 
-export function applySkillMetadata(skill: Skill, metadata: Record<string, number>): void {
+export function applySkillMetadata(
+  skill: Skill,
+  metadata: Record<string, number>,
+): void {
   for (const [key, value] of Object.entries(metadata)) {
     if (key in skill) {
       (skill as any)[key] = value;
@@ -62,8 +65,12 @@ export function applySkillMetadata(skill: Skill, metadata: Record<string, number
   }
 }
 
-export function tagSkill(skill: Skill, tag: string, increment: number = 1): void {
-  if (!['helpful', 'harmful', 'neutral'].includes(tag)) {
+export function tagSkill(
+  skill: Skill,
+  tag: string,
+  increment: number = 1,
+): void {
+  if (!["helpful", "harmful", "neutral"].includes(tag)) {
     throw new Error(`Unsupported tag: ${tag}`);
   }
   (skill as any)[tag] += increment;
@@ -103,7 +110,7 @@ export class Skillbook {
      * typically used for debugging/inspection, not LLM prompts.
      */
     if (this._skills.size === 0) {
-      return 'Skillbook(empty)';
+      return "Skillbook(empty)";
     }
     return this._asMarkdownDebug();
   }
@@ -115,7 +122,7 @@ export class Skillbook {
     section: string,
     content: string,
     skillId?: string,
-    metadata?: Record<string, number>
+    metadata?: Record<string, number>,
   ): Skill {
     const id = skillId ?? this._generateId(section);
     const skill = createSkill({ id, section, content });
@@ -139,7 +146,7 @@ export class Skillbook {
     options: {
       content?: string;
       metadata?: Record<string, number>;
-    }
+    },
   ): Skill | null {
     const skill = this._skills.get(skillId);
     if (!skill) {
@@ -182,14 +189,14 @@ export class Skillbook {
 
     if (soft) {
       // Soft delete: mark as invalid but keep in storage
-      skill.status = 'invalid';
+      skill.status = "invalid";
       skill.updated_at = new Date().toISOString();
     } else {
       // Hard delete: remove entirely
       this._skills.delete(skillId);
       const sectionList = this._sections.get(skill.section);
       if (sectionList) {
-        const filtered = sectionList.filter(id => id !== skillId);
+        const filtered = sectionList.filter((id) => id !== skillId);
         if (filtered.length === 0) {
           this._sections.delete(skill.section);
         } else {
@@ -214,17 +221,20 @@ export class Skillbook {
     if (includeInvalid) {
       return allSkills;
     }
-    return allSkills.filter(s => s.status === 'active');
+    return allSkills.filter((s) => s.status === "active");
   }
 
   // ------------------------------------------------------------------ //
   // Similarity decisions (for deduplication)
   // ------------------------------------------------------------------ //
   private _makePairKey(skillIdA: string, skillIdB: string): string {
-    return [skillIdA, skillIdB].sort().join(',');
+    return [skillIdA, skillIdB].sort().join(",");
   }
 
-  getSimilarityDecision(skillIdA: string, skillIdB: string): SimilarityDecision | null {
+  getSimilarityDecision(
+    skillIdA: string,
+    skillIdB: string,
+  ): SimilarityDecision | null {
     /** Get a prior similarity decision for a pair of skills */
     const pairKey = this._makePairKey(skillIdA, skillIdB);
     return this._similarityDecisions.get(pairKey) ?? null;
@@ -233,7 +243,7 @@ export class Skillbook {
   setSimilarityDecision(
     skillIdA: string,
     skillIdB: string,
-    decision: SimilarityDecision
+    decision: SimilarityDecision,
   ): void {
     /** Store a similarity decision for a pair of skills */
     const pairKey = this._makePairKey(skillIdA, skillIdB);
@@ -243,7 +253,7 @@ export class Skillbook {
   hasKeepDecision(skillIdA: string, skillIdB: string): boolean {
     /** Check if there's a KEEP decision for this pair */
     const decision = this.getSimilarityDecision(skillIdA, skillIdB);
-    return decision !== null && decision.decision === 'KEEP';
+    return decision !== null && decision.decision === "KEEP";
   }
 
   // ------------------------------------------------------------------ //
@@ -278,14 +288,14 @@ export class Skillbook {
 
     const skillsPayload = payload.skills ?? {};
     for (const [skillId, skillValue] of Object.entries(skillsPayload)) {
-      if (typeof skillValue === 'object' && skillValue !== null) {
+      if (typeof skillValue === "object" && skillValue !== null) {
         const skillData = skillValue as any;
         // Handle new optional fields with defaults for backwards compatibility
         if (!skillData.embedding) {
           skillData.embedding = undefined;
         }
         if (!skillData.status) {
-          skillData.status = 'active';
+          skillData.status = "active";
         }
         instance._skills.set(skillId, skillData as Skill);
       }
@@ -301,9 +311,14 @@ export class Skillbook {
     instance._nextId = payload.next_id ?? 0;
 
     const similarityDecisionsPayload = payload.similarity_decisions ?? {};
-    for (const [pairKey, decision] of Object.entries(similarityDecisionsPayload)) {
-      if (typeof decision === 'object' && decision !== null) {
-        instance._similarityDecisions.set(pairKey, decision as SimilarityDecision);
+    for (const [pairKey, decision] of Object.entries(
+      similarityDecisionsPayload,
+    )) {
+      if (typeof decision === "object" && decision !== null) {
+        instance._similarityDecisions.set(
+          pairKey,
+          decision as SimilarityDecision,
+        );
       }
     }
 
@@ -316,8 +331,8 @@ export class Skillbook {
 
   static loads(data: string): Skillbook {
     const payload = JSON.parse(data);
-    if (typeof payload !== 'object' || payload === null) {
-      throw new Error('Skillbook serialization must be a JSON object.');
+    if (typeof payload !== "object" || payload === null) {
+      throw new Error("Skillbook serialization must be a JSON object.");
     }
     return Skillbook.fromDict(payload);
   }
@@ -335,7 +350,7 @@ export class Skillbook {
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true });
     }
-    writeFileSync(path, this.dumps(), 'utf-8');
+    writeFileSync(path, this.dumps(), "utf-8");
   }
 
   static loadFromFile(path: string): Skillbook {
@@ -353,7 +368,7 @@ export class Skillbook {
     if (!existsSync(path)) {
       throw new Error(`Skillbook file not found: ${path}`);
     }
-    const data = readFileSync(path, 'utf-8');
+    const data = readFileSync(path, "utf-8");
     return Skillbook.loads(data);
   }
 
@@ -369,14 +384,14 @@ export class Skillbook {
   private _applyOperation(operation: UpdateOperation): void {
     const opType = operation.type.toUpperCase();
 
-    if (opType === 'ADD') {
+    if (opType === "ADD") {
       this.addSkill(
         operation.section,
-        operation.content ?? '',
+        operation.content ?? "",
         operation.skill_id,
-        operation.metadata
+        operation.metadata,
       );
-    } else if (opType === 'UPDATE') {
+    } else if (opType === "UPDATE") {
       if (!operation.skill_id) {
         return;
       }
@@ -384,18 +399,18 @@ export class Skillbook {
         content: operation.content,
         metadata: operation.metadata,
       });
-    } else if (opType === 'TAG') {
+    } else if (opType === "TAG") {
       if (!operation.skill_id) {
         return;
       }
       // Only apply valid tag names as defensive measure
-      const validTags = new Set(['helpful', 'harmful', 'neutral']);
+      const validTags = new Set(["helpful", "harmful", "neutral"]);
       for (const [tag, increment] of Object.entries(operation.metadata ?? {})) {
         if (validTags.has(tag)) {
           this.tagSkill(operation.skill_id, tag, increment);
         }
       }
-    } else if (opType === 'REMOVE') {
+    } else if (opType === "REMOVE") {
       if (!operation.skill_id) {
         return;
       }
@@ -415,7 +430,7 @@ export class Skillbook {
      *
      * @returns JSON-formatted string with skills array
      */
-    const skillsData = this.skills().map(s => skillToLLMDict(s));
+    const skillsData = this.skills().map((s) => skillToLLMDict(s));
     return JSON.stringify({ skills: skillsData });
   }
 
@@ -428,7 +443,7 @@ export class Skillbook {
      */
     const parts: string[] = [];
     const sortedSections = Array.from(this._sections.entries()).sort((a, b) =>
-      a[0].localeCompare(b[0])
+      a[0].localeCompare(b[0]),
     );
 
     for (const [section, skillIds] of sortedSections) {
@@ -441,7 +456,7 @@ export class Skillbook {
         }
       }
     }
-    return parts.join('\n');
+    return parts.join("\n");
   }
 
   stats(): Record<string, any> {
@@ -462,7 +477,7 @@ export class Skillbook {
   // ------------------------------------------------------------------ //
   private _generateId(section: string): string {
     this._nextId += 1;
-    const sectionPrefix = section.split(' ')[0].toLowerCase();
-    return `${sectionPrefix}-${this._nextId.toString().padStart(5, '0')}`;
+    const sectionPrefix = section.split(" ")[0].toLowerCase();
+    return `${sectionPrefix}-${this._nextId.toString().padStart(5, "0")}`;
   }
 }

@@ -2,11 +2,15 @@
  * Agent, Reflector, and SkillManager components.
  */
 
-import { z } from 'zod';
-import { LLMClient } from './llm.js';
-import { Skillbook } from './skillbook.js';
-import { UpdateBatch, updateBatchFromJSON } from './updates.js';
-import { createAgentPrompt, createReflectorPrompt, createSkillManagerPrompt } from './prompts.js';
+import { z } from "zod";
+import { LLMClient } from "./llm.js";
+import { Skillbook } from "./skillbook.js";
+import { UpdateBatch, updateBatchFromJSON } from "./updates.js";
+import {
+  createAgentPrompt,
+  createReflectorPrompt,
+  createSkillManagerPrompt,
+} from "./prompts.js";
 
 // ================================
 // UTILITY FUNCTIONS
@@ -19,21 +23,21 @@ function safeJsonLoads(text: string): Record<string, any> {
   let cleanText = text.trim();
 
   // Handle opening fence (with or without language identifier)
-  if (cleanText.startsWith('```json')) {
+  if (cleanText.startsWith("```json")) {
     cleanText = cleanText.slice(7).trim();
-  } else if (cleanText.startsWith('```')) {
+  } else if (cleanText.startsWith("```")) {
     cleanText = cleanText.slice(3).trim();
   }
 
   // Handle closing fence (if present)
-  if (cleanText.endsWith('```')) {
+  if (cleanText.endsWith("```")) {
     cleanText = cleanText.slice(0, -3).trim();
   }
 
   try {
     const data = JSON.parse(cleanText);
-    if (typeof data !== 'object' || data === null) {
-      throw new Error('Expected a JSON object from LLM.');
+    if (typeof data !== "object" || data === null) {
+      throw new Error("Expected a JSON object from LLM.");
     }
     return data;
   } catch (exc) {
@@ -86,10 +90,18 @@ export interface AgentOutput {
 }
 
 const AgentOutputSchema = z.object({
-  reasoning: z.string().describe('Step-by-step reasoning process'),
-  final_answer: z.string().describe('The final answer to the question'),
-  skill_ids: z.array(z.string()).optional().default([]).describe('IDs of strategies cited in reasoning'),
-  raw: z.record(z.any()).optional().default({}).describe('Raw LLM response data'),
+  reasoning: z.string().describe("Step-by-step reasoning process"),
+  final_answer: z.string().describe("The final answer to the question"),
+  skill_ids: z
+    .array(z.string())
+    .optional()
+    .default([])
+    .describe("IDs of strategies cited in reasoning"),
+  raw: z
+    .record(z.any())
+    .optional()
+    .default({})
+    .describe("Raw LLM response data"),
 });
 
 export class Agent {
@@ -126,7 +138,7 @@ export class Agent {
       question: string;
       context?: string;
       reflection?: string;
-    }) => string
+    }) => string,
   ) {
     this.promptTemplate = promptTemplate ?? createAgentPrompt;
   }
@@ -149,8 +161,14 @@ export class Agent {
     const prompt = this.promptTemplate!(params);
 
     // Try structured output first if available
-    if ('completeStructured' in this.llm && typeof (this.llm as any).completeStructured === 'function') {
-      const output = await (this.llm as any).completeStructured(prompt, AgentOutputSchema);
+    if (
+      "completeStructured" in this.llm &&
+      typeof (this.llm as any).completeStructured === "function"
+    ) {
+      const output = await (this.llm as any).completeStructured(
+        prompt,
+        AgentOutputSchema,
+      );
       output.skill_ids = extractCitedSkillIds(output.reasoning);
       return output;
     }
@@ -159,8 +177,8 @@ export class Agent {
     const response = await this.llm.complete(prompt);
     const data = safeJsonLoads(response.text);
     const output: AgentOutput = {
-      reasoning: data.reasoning ?? '',
-      final_answer: data.final_answer ?? '',
+      reasoning: data.reasoning ?? "",
+      final_answer: data.final_answer ?? "",
       skill_ids: data.skill_ids ?? [],
       raw: data,
     };
@@ -200,7 +218,7 @@ export class ReplayAgent {
    */
   constructor(
     private responses: Record<string, string> = {},
-    private defaultResponse: string = ''
+    private defaultResponse: string = "",
   ) {}
 
   async generate(params: {
@@ -215,7 +233,7 @@ export class ReplayAgent {
       const fromSample = this.extractResponseFromSample(params.sample);
       if (fromSample) {
         return {
-          reasoning: 'Replay from sample',
+          reasoning: "Replay from sample",
           final_answer: fromSample,
           skill_ids: [],
         };
@@ -225,7 +243,7 @@ export class ReplayAgent {
     // Fallback to dict-based lookup
     const answer = this.responses[params.question] ?? this.defaultResponse;
     return {
-      reasoning: 'Replay from dict',
+      reasoning: "Replay from dict",
       final_answer: answer,
       skill_ids: [],
     };
@@ -233,19 +251,23 @@ export class ReplayAgent {
 
   private extractResponseFromSample(sample: any): string | null {
     // Try sample.metadata['response'] (dataclass-style)
-    if (sample.metadata && typeof sample.metadata === 'object') {
+    if (sample.metadata && typeof sample.metadata === "object") {
       const response = sample.metadata.response;
       if (response) return String(response);
     }
 
     // Try sample['metadata']['response'] (nested dict)
-    if (typeof sample === 'object' && sample.metadata && typeof sample.metadata === 'object') {
+    if (
+      typeof sample === "object" &&
+      sample.metadata &&
+      typeof sample.metadata === "object"
+    ) {
       const response = sample.metadata.response;
       if (response) return String(response);
     }
 
     // Try sample['response'] (direct dict)
-    if (typeof sample === 'object' && sample.response) {
+    if (typeof sample === "object" && sample.response) {
       return String(sample.response);
     }
 
@@ -275,21 +297,25 @@ export interface ReflectorOutput {
 }
 
 const ReflectorOutputSchema = z.object({
-  analysis: z.string().describe('Detailed diagnostic analysis'),
+  analysis: z.string().describe("Detailed diagnostic analysis"),
   helpful_skill_ids: z.array(z.string()).default([]),
   harmful_skill_ids: z.array(z.string()).default([]),
-  new_learnings: z.array(
-    z.object({
-      section: z.string(),
-      content: z.string(),
-      atomicity_score: z.number(),
+  new_learnings: z
+    .array(
+      z.object({
+        section: z.string(),
+        content: z.string(),
+        atomicity_score: z.number(),
+      }),
+    )
+    .default([]),
+  reflection_quality: z
+    .object({
+      root_cause_identified: z.boolean(),
+      learnings_actionable: z.boolean(),
+      evidence_based: z.boolean(),
     })
-  ).default([]),
-  reflection_quality: z.object({
-    root_cause_identified: z.boolean(),
-    learnings_actionable: z.boolean(),
-    evidence_based: z.boolean(),
-  }).optional(),
+    .optional(),
 });
 
 export class Reflector {
@@ -311,7 +337,7 @@ export class Reflector {
       feedback: string;
       groundTruth?: string;
       skillbook: Skillbook;
-    }) => string
+    }) => string,
   ) {
     this.promptTemplate = promptTemplate ?? createReflectorPrompt;
   }
@@ -326,15 +352,21 @@ export class Reflector {
     const prompt = this.promptTemplate!(params);
 
     // Try structured output first if available
-    if ('completeStructured' in this.llm && typeof (this.llm as any).completeStructured === 'function') {
-      return await (this.llm as any).completeStructured(prompt, ReflectorOutputSchema);
+    if (
+      "completeStructured" in this.llm &&
+      typeof (this.llm as any).completeStructured === "function"
+    ) {
+      return await (this.llm as any).completeStructured(
+        prompt,
+        ReflectorOutputSchema,
+      );
     }
 
     // Fallback to text completion and manual JSON parsing
     const response = await this.llm.complete(prompt);
     const data = safeJsonLoads(response.text);
     return {
-      analysis: data.analysis ?? '',
+      analysis: data.analysis ?? "",
       helpful_skill_ids: data.helpful_skill_ids ?? [],
       harmful_skill_ids: data.harmful_skill_ids ?? [],
       new_learnings: data.new_learnings ?? [],
@@ -363,7 +395,7 @@ export class SkillManager {
     private promptTemplate?: (params: {
       reflectionAnalysis: string;
       skillbook: Skillbook;
-    }) => string
+    }) => string,
   ) {
     this.promptTemplate = promptTemplate ?? createSkillManagerPrompt;
   }

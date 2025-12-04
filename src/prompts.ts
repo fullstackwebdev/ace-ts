@@ -13,7 +13,7 @@
  * Based on ACE v2.0 architecture with MCP presentation enhancements.
  */
 
-import { Skillbook } from './skillbook.js';
+import { Skillbook } from "./skillbook.js";
 
 // ================================
 // SHARED CONSTANTS
@@ -60,7 +60,7 @@ export function wrapSkillbookForExternalAgent(skillbook: Skillbook): string {
   const skills = skillbook.skills();
 
   if (skills.length === 0) {
-    return '';
+    return "";
   }
 
   // Get formatted skills from skillbook
@@ -90,10 +90,10 @@ export function createAgentPrompt(params: {
   context?: string;
   reflection?: string;
 }): string {
-  const currentDate = new Date().toISOString().split('T')[0];
+  const currentDate = new Date().toISOString().split("T")[0];
   const skillbookText = params.skillbook.asPrompt();
-  const contextText = params.context ?? 'None';
-  const reflectionText = params.reflection ?? 'None';
+  const contextText = params.context ?? "None";
+  const reflectionText = params.reflection ?? "None";
 
   return `\
 # Identity and Metadata
@@ -206,7 +206,7 @@ export function createReflectorPrompt(params: {
   skillbook: Skillbook;
 }): string {
   const skillbookText = params.skillbook.asPrompt();
-  const groundTruthText = params.groundTruth ?? 'Not provided';
+  const groundTruthText = params.groundTruth ?? "Not provided";
 
   return `\
 # ⚡ QUICK REFERENCE ⚡

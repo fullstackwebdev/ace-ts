@@ -3,8 +3,8 @@
  * TypeScript equivalent of Python's LiteLLM client.
  */
 
-import { generateText, LanguageModel } from 'ai';
-import { LLMClient, LLMResponse } from '../llm.js';
+import { generateText, LanguageModel } from "ai";
+import { LLMClient, LLMResponse } from "../llm.js";
 
 /**
  * Configuration for Vercel AI client.
@@ -14,7 +14,7 @@ export interface VercelAIConfig {
   model: string | LanguageModel;
 
   /** Provider name ('openai', 'anthropic', 'google', etc.) */
-  provider?: 'openai' | 'anthropic' | 'google' | 'custom';
+  provider?: "openai" | "anthropic" | "google" | "custom";
 
   /** API key for the provider */
   apiKey?: string;
@@ -56,7 +56,7 @@ export interface VercelAIConfig {
   verbose?: boolean;
 
   /** Claude-specific: sampling priority */
-  samplingPriority?: 'temperature' | 'top_p' | 'top_k';
+  samplingPriority?: "temperature" | "top_p" | "top_k";
 
   /** Custom HTTP headers */
   extraHeaders?: Record<string, string>;
@@ -102,7 +102,8 @@ export class VercelAIClient extends LLMClient {
 
   constructor(config: VercelAIConfig) {
     // Extract model string for parent constructor
-    const modelString = typeof config.model === 'string' ? config.model : undefined;
+    const modelString =
+      typeof config.model === "string" ? config.model : undefined;
     super(modelString);
 
     // Store full config with defaults
@@ -113,12 +114,12 @@ export class VercelAIClient extends LLMClient {
       maxRetries: 3,
       trackCost: true,
       verbose: false,
-      samplingPriority: 'temperature',
+      samplingPriority: "temperature",
       ...config,
     };
 
     // If model is a LanguageModel, store it directly
-    if (typeof config.model !== 'string') {
+    if (typeof config.model !== "string") {
       this.languageModel = config.model;
     }
 
@@ -127,7 +128,7 @@ export class VercelAIClient extends LLMClient {
 
     // Log verbose mode
     if (this.config.verbose) {
-      console.log('[VercelAIClient] Initialized with config:', {
+      console.log("[VercelAIClient] Initialized with config:", {
         model: this.model,
         provider: this.config.provider,
         temperature: this.config.temperature,
@@ -140,16 +141,19 @@ export class VercelAIClient extends LLMClient {
     /**
      * Set up API keys from config or environment variables.
      */
-    if (!this.config.apiKey && typeof this.config.model === 'string') {
+    if (!this.config.apiKey && typeof this.config.model === "string") {
       const modelLower = this.config.model.toLowerCase();
 
-      if (modelLower.includes('gpt') || modelLower.includes('openai')) {
+      if (modelLower.includes("gpt") || modelLower.includes("openai")) {
         this.config.apiKey = process.env.OPENAI_API_KEY;
-      } else if (modelLower.includes('claude') || modelLower.includes('anthropic')) {
+      } else if (
+        modelLower.includes("claude") ||
+        modelLower.includes("anthropic")
+      ) {
         this.config.apiKey = process.env.ANTHROPIC_API_KEY;
-      } else if (modelLower.includes('cohere')) {
+      } else if (modelLower.includes("cohere")) {
         this.config.apiKey = process.env.COHERE_API_KEY;
-      } else if (modelLower.includes('gemini')) {
+      } else if (modelLower.includes("gemini")) {
         this.config.apiKey = process.env.GOOGLE_API_KEY;
       }
     }
@@ -164,19 +168,21 @@ export class VercelAIClient extends LLMClient {
     }
 
     // Need to create from provider and model string
-    if (typeof this.config.model !== 'string') {
-      throw new Error('Model must be a string if not providing LanguageModel directly');
+    if (typeof this.config.model !== "string") {
+      throw new Error(
+        "Model must be a string if not providing LanguageModel directly",
+      );
     }
 
     if (!this.config.provider) {
-      throw new Error('Provider must be specified when using model string');
+      throw new Error("Provider must be specified when using model string");
     }
 
     const modelString = this.config.model;
 
     switch (this.config.provider) {
-      case 'openai': {
-        const { createOpenAI } = await import('@ai-sdk/openai');
+      case "openai": {
+        const { createOpenAI } = await import("@ai-sdk/openai");
         const client = createOpenAI({
           apiKey: this.config.apiKey,
           baseURL: this.config.apiBase,
@@ -184,8 +190,8 @@ export class VercelAIClient extends LLMClient {
         this.languageModel = client(modelString) as any;
         break;
       }
-      case 'anthropic': {
-        const { createAnthropic } = await import('@ai-sdk/anthropic');
+      case "anthropic": {
+        const { createAnthropic } = await import("@ai-sdk/anthropic");
         const client = createAnthropic({
           apiKey: this.config.apiKey,
           baseURL: this.config.apiBase,
@@ -193,8 +199,8 @@ export class VercelAIClient extends LLMClient {
         this.languageModel = client(modelString) as any;
         break;
       }
-      case 'google': {
-        const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
+      case "google": {
+        const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
         const client = createGoogleGenerativeAI({
           apiKey: this.config.apiKey,
           baseURL: this.config.apiBase,
@@ -202,13 +208,13 @@ export class VercelAIClient extends LLMClient {
         this.languageModel = client(modelString) as any;
         break;
       }
-      case 'custom': {
-        throw new Error('Custom provider requires LanguageModel instance');
+      case "custom": {
+        throw new Error("Custom provider requires LanguageModel instance");
       }
     }
 
     if (!this.languageModel) {
-      throw new Error('Failed to create language model');
+      throw new Error("Failed to create language model");
     }
 
     return this.languageModel;
@@ -228,63 +234,68 @@ export class VercelAIClient extends LLMClient {
   static resolveSamplingParams(
     params: Record<string, any>,
     modelString: string,
-    samplingPriority: string = 'temperature'
+    samplingPriority: string = "temperature",
   ): Record<string, any> {
     // Only apply to Claude models
-    if (!modelString.toLowerCase().includes('claude')) {
+    if (!modelString.toLowerCase().includes("claude")) {
       return params;
     }
 
-    if (!['temperature', 'top_p', 'top_k'].includes(samplingPriority)) {
+    if (!["temperature", "top_p", "top_k"].includes(samplingPriority)) {
       throw new Error(
-        `Invalid sampling_priority: ${samplingPriority}. Must be one of: temperature, top_p, top_k`
+        `Invalid sampling_priority: ${samplingPriority}. Must be one of: temperature, top_p, top_k`,
       );
     }
 
     const resolved = { ...params };
 
     // Check which sampling params are present and not null/undefined
-    const hasTemperature = 'temperature' in resolved && resolved.temperature != null;
-    const hasTopP = 'topP' in resolved && resolved.topP != null;
-    const hasTopK = 'topK' in resolved && resolved.topK != null;
+    const hasTemperature =
+      "temperature" in resolved && resolved.temperature != null;
+    const hasTopP = "topP" in resolved && resolved.topP != null;
+    const hasTopK = "topK" in resolved && resolved.topK != null;
 
     // Remove null/undefined parameters early
-    if ('temperature' in resolved && resolved.temperature == null) {
+    if ("temperature" in resolved && resolved.temperature == null) {
       delete resolved.temperature;
     }
-    if ('topP' in resolved && resolved.topP == null) {
+    if ("topP" in resolved && resolved.topP == null) {
       delete resolved.topP;
     }
-    if ('topK' in resolved && resolved.topK == null) {
+    if ("topK" in resolved && resolved.topK == null) {
       delete resolved.topK;
     }
 
     // Apply priority-based resolution
-    if (samplingPriority === 'temperature' && hasTemperature && resolved.temperature > 0) {
+    if (
+      samplingPriority === "temperature" &&
+      hasTemperature &&
+      resolved.temperature > 0
+    ) {
       // Non-zero temperature takes precedence - remove others
       delete resolved.topP;
       delete resolved.topK;
       if (hasTopP || hasTopK) {
         console.log(
-          `[VercelAIClient] Claude model ${modelString}: Using temperature=${resolved.temperature}, ignoring other sampling params`
+          `[VercelAIClient] Claude model ${modelString}: Using temperature=${resolved.temperature}, ignoring other sampling params`,
         );
       }
-    } else if (samplingPriority === 'top_p' && hasTopP) {
+    } else if (samplingPriority === "top_p" && hasTopP) {
       // top_p takes precedence - remove others
       delete resolved.temperature;
       delete resolved.topK;
       if (hasTemperature || hasTopK) {
         console.log(
-          `[VercelAIClient] Claude model ${modelString}: Using topP=${resolved.topP}, ignoring other sampling params`
+          `[VercelAIClient] Claude model ${modelString}: Using topP=${resolved.topP}, ignoring other sampling params`,
         );
       }
-    } else if (samplingPriority === 'top_k' && hasTopK) {
+    } else if (samplingPriority === "top_k" && hasTopK) {
       // top_k takes precedence - remove others
       delete resolved.temperature;
       delete resolved.topP;
       if (hasTemperature || hasTopP) {
         console.log(
-          `[VercelAIClient] Claude model ${modelString}: Using topK=${resolved.topK}, ignoring other sampling params`
+          `[VercelAIClient] Claude model ${modelString}: Using topK=${resolved.topK}, ignoring other sampling params`,
         );
       }
     } else {
@@ -327,10 +338,10 @@ export class VercelAIClient extends LLMClient {
     const messages: Array<{ role: string; content: string }> = [];
 
     if (system) {
-      messages.push({ role: 'system', content: system });
+      messages.push({ role: "system", content: system });
     }
 
-    messages.push({ role: 'user', content: prompt });
+    messages.push({ role: "user", content: prompt });
 
     // Merge config with runtime kwargs
     let mergedParams: Record<string, any> = {
@@ -339,7 +350,11 @@ export class VercelAIClient extends LLMClient {
     };
 
     // Add optional sampling parameters if provided
-    if (kwargs.topP != null || kwargs.top_p != null || this.config.topP != null) {
+    if (
+      kwargs.topP != null ||
+      kwargs.top_p != null ||
+      this.config.topP != null
+    ) {
       mergedParams.topP = kwargs.topP ?? kwargs.top_p ?? this.config.topP;
     }
     if (kwargs.topK != null || kwargs.top_k != null) {
@@ -347,36 +362,40 @@ export class VercelAIClient extends LLMClient {
     }
 
     // Apply single-point parameter resolution for Claude models
-    const modelString = this.model || 'unknown';
+    const modelString = this.model || "unknown";
     const callParams = VercelAIClient.resolveSamplingParams(
       mergedParams,
       modelString,
-      this.config.samplingPriority
+      this.config.samplingPriority,
     );
 
     // Filter out ACE-specific parameters
     const aceSpecificParams = new Set([
-      'refinement_round',
-      'max_refinement_rounds',
-      'stream_thinking',
-      'system', // Already handled
+      "refinement_round",
+      "max_refinement_rounds",
+      "stream_thinking",
+      "system", // Already handled
     ]);
 
     // Add remaining kwargs (excluding ACE-specific and already-handled parameters)
     const handledParams = new Set([
-      'temperature',
-      'topP',
-      'top_p',
-      'topK',
-      'top_k',
-      'maxTokens',
-      'max_tokens',
-      'timeout',
-      'num_retries',
+      "temperature",
+      "topP",
+      "top_p",
+      "topK",
+      "top_k",
+      "maxTokens",
+      "max_tokens",
+      "timeout",
+      "num_retries",
     ]);
 
     for (const [key, value] of Object.entries(kwargs)) {
-      if (!callParams[key] && !aceSpecificParams.has(key) && !handledParams.has(key)) {
+      if (
+        !callParams[key] &&
+        !aceSpecificParams.has(key) &&
+        !handledParams.has(key)
+      ) {
         callParams[key] = value;
       }
     }
@@ -399,7 +418,7 @@ export class VercelAIClient extends LLMClient {
       };
 
       if (this.config.verbose) {
-        console.log('[VercelAIClient] Completion result:', {
+        console.log("[VercelAIClient] Completion result:", {
           textLength: result.text.length,
           usage: result.usage,
           finishReason: result.finishReason,
@@ -412,12 +431,15 @@ export class VercelAIClient extends LLMClient {
       };
     } catch (error: any) {
       // Try fallbacks if available
-      if (this.config.fallbacks && this.currentFallbackIndex < this.config.fallbacks.length) {
+      if (
+        this.config.fallbacks &&
+        this.currentFallbackIndex < this.config.fallbacks.length
+      ) {
         const fallbackModel = this.config.fallbacks[this.currentFallbackIndex];
         this.currentFallbackIndex++;
 
         console.warn(
-          `[VercelAIClient] Primary model failed, trying fallback: ${fallbackModel}`
+          `[VercelAIClient] Primary model failed, trying fallback: ${fallbackModel}`,
         );
 
         // Create new client with fallback model
@@ -429,14 +451,14 @@ export class VercelAIClient extends LLMClient {
         return fallbackClient.complete(prompt, options);
       }
 
-      console.error('[VercelAIClient] Error in completion:', error);
+      console.error("[VercelAIClient] Error in completion:", error);
       throw error;
     }
   }
 
   async completeWithStream(
     prompt: string,
-    options?: any
+    options?: any,
   ): Promise<AsyncIterable<string>> {
     /**
      * Generate completion with streaming support.
@@ -449,11 +471,12 @@ export class VercelAIClient extends LLMClient {
     const system = options?.system;
 
     // Dynamic import for streaming
-    const { streamText } = await import('ai');
+    const { streamText } = await import("ai");
 
     const mergedParams: Record<string, any> = {
       temperature: options?.temperature ?? this.config.temperature,
-      maxTokens: options?.maxTokens ?? options?.max_tokens ?? this.config.maxTokens,
+      maxTokens:
+        options?.maxTokens ?? options?.max_tokens ?? this.config.maxTokens,
     };
 
     try {
@@ -471,7 +494,7 @@ export class VercelAIClient extends LLMClient {
         }
       })();
     } catch (error: any) {
-      console.error('[VercelAIClient] Error in streaming:', error);
+      console.error("[VercelAIClient] Error in streaming:", error);
       throw error;
     }
   }
@@ -482,18 +505,24 @@ export class VercelAIClient extends LLMClient {
      */
     const modelLower = modelString.toLowerCase();
 
-    if (modelLower.includes('gpt') || modelLower.includes('openai')) {
-      return 'openai';
-    } else if (modelLower.includes('claude') || modelLower.includes('anthropic')) {
-      return 'anthropic';
-    } else if (modelLower.includes('gemini') || modelLower.includes('palm')) {
-      return 'google';
-    } else if (modelLower.includes('command') || modelLower.includes('cohere')) {
-      return 'cohere';
-    } else if (modelLower.includes('llama') || modelLower.includes('mistral')) {
-      return 'meta';
+    if (modelLower.includes("gpt") || modelLower.includes("openai")) {
+      return "openai";
+    } else if (
+      modelLower.includes("claude") ||
+      modelLower.includes("anthropic")
+    ) {
+      return "anthropic";
+    } else if (modelLower.includes("gemini") || modelLower.includes("palm")) {
+      return "google";
+    } else if (
+      modelLower.includes("command") ||
+      modelLower.includes("cohere")
+    ) {
+      return "cohere";
+    } else if (modelLower.includes("llama") || modelLower.includes("mistral")) {
+      return "meta";
     } else {
-      return 'unknown';
+      return "unknown";
     }
   }
 
@@ -504,24 +533,24 @@ export class VercelAIClient extends LLMClient {
   static listModels(): string[] {
     return [
       // OpenAI
-      'gpt-4',
-      'gpt-4-turbo',
-      'gpt-4o',
-      'gpt-4o-mini',
-      'gpt-3.5-turbo',
-      'gpt-3.5-turbo-16k',
+      "gpt-4",
+      "gpt-4-turbo",
+      "gpt-4o",
+      "gpt-4o-mini",
+      "gpt-3.5-turbo",
+      "gpt-3.5-turbo-16k",
       // Anthropic
-      'claude-3-opus-20240229',
-      'claude-3-sonnet-20240229',
-      'claude-3-haiku-20240307',
-      'claude-3-5-sonnet-20241022',
-      'claude-2.1',
-      'claude-2',
+      "claude-3-opus-20240229",
+      "claude-3-sonnet-20240229",
+      "claude-3-haiku-20240307",
+      "claude-3-5-sonnet-20241022",
+      "claude-2.1",
+      "claude-2",
       // Google
-      'gemini-pro',
-      'gemini-pro-vision',
-      'gemini-1.5-pro',
-      'gemini-1.5-flash',
+      "gemini-pro",
+      "gemini-pro-vision",
+      "gemini-1.5-pro",
+      "gemini-1.5-flash",
       // Note: Many more models are supported
       // See: https://sdk.vercel.ai/providers
     ];
@@ -535,7 +564,7 @@ export class VercelAIClient extends LLMClient {
  * @returns Configured VercelAIClient instance
  */
 export async function createVercelAIClient(params: {
-  provider: 'openai' | 'anthropic' | 'google';
+  provider: "openai" | "anthropic" | "google";
   model: string;
   apiKey?: string;
   temperature?: number;

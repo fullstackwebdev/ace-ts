@@ -4,10 +4,10 @@
  */
 
 // Core exports
-export type { Skill, SimilarityDecision } from './skillbook.js';
-export { Skillbook, createSkill, skillToLLMDict } from './skillbook.js';
+export type { Skill, SimilarityDecision } from "./skillbook.js";
+export { Skillbook, createSkill, skillToLLMDict } from "./skillbook.js";
 
-export type { UpdateOperation, UpdateBatch, OperationType } from './updates.js';
+export type { UpdateOperation, UpdateBatch, OperationType } from "./updates.js";
 export {
   createUpdateOperation,
   createUpdateBatch,
@@ -15,25 +15,21 @@ export {
   updateBatchFromJSON,
   updateOperationToJSON,
   updateBatchToJSON,
-} from './updates.js';
+} from "./updates.js";
 
 // LLM clients
-export type { LLMClient, LLMResponse } from './llm.js';
-export {
-  DummyLLMClient,
-  VercelAIClient,
-  createLLMClient,
-} from './llm.js';
+export type { LLMClient, LLMResponse } from "./llm.js";
+export { DummyLLMClient, VercelAIClient, createLLMClient } from "./llm.js";
 
 // Roles
-export type { AgentOutput, ReflectorOutput } from './roles.js';
+export type { AgentOutput, ReflectorOutput } from "./roles.js";
 export {
   Agent,
   ReplayAgent,
   Reflector,
   SkillManager,
   extractCitedSkillIds,
-} from './roles.js';
+} from "./roles.js";
 
 // Prompts v1 (basic)
 export {
@@ -42,7 +38,7 @@ export {
   createAgentPrompt,
   createReflectorPrompt,
   createSkillManagerPrompt,
-} from './prompts.js';
+} from "./prompts.js";
 
 // Prompts v2 (advanced)
 export {
@@ -58,8 +54,8 @@ export {
   PromptManager,
   validatePromptOutput,
   MIGRATION_GUIDE,
-} from './prompts_v2.js';
-export type { PromptVersions, ValidationResult } from './prompts_v2.js';
+} from "./prompts_v2.js";
+export type { PromptVersions, ValidationResult } from "./prompts_v2.js";
 
 // Prompts v2.1 (state-of-the-art - RECOMMENDED, +17% success rate)
 export {
@@ -74,7 +70,7 @@ export {
   validatePromptOutputV21,
   MIGRATION_GUIDE_V21,
   comparePromptVersions,
-} from './prompts_v2_1.js';
+} from "./prompts_v2_1.js";
 
 // Adaptation loops
 export type {
@@ -84,12 +80,8 @@ export type {
   ACEStepResult,
   ACEConfig,
   OfflineACERunOptions,
-} from './adaptation.js';
-export {
-  SimpleEnvironment,
-  OfflineACE,
-  OnlineACE,
-} from './adaptation.js';
+} from "./adaptation.js";
+export { SimpleEnvironment, OfflineACE, OnlineACE } from "./adaptation.js";
 
 // Async learning infrastructure
 export type {
@@ -97,24 +89,24 @@ export type {
   ReflectionResult,
   AsyncLearningPipelineOptions,
   AsyncLearningPipelineStats,
-} from './async_learning.js';
+} from "./async_learning.js";
 export {
   ThreadSafeSkillbook,
   AsyncLearningPipeline,
-} from './async_learning.js';
+} from "./async_learning.js";
 
 // Simple integration class (similar to ACELiteLLM)
-export { ACEAgent } from './integrations/simple.js';
+export { ACEAgent } from "./integrations/simple.js";
 
 // Integration utilities for external agents
-export { wrapSkillbookContext } from './integrations/base.js';
+export { wrapSkillbookContext } from "./integrations/base.js";
 
 // LLM Provider implementations
-export type { VercelAIConfig } from './llm_providers/index.js';
+export type { VercelAIConfig } from "./llm_providers/index.js";
 export {
   VercelAIClient as VercelAIProviderClient,
   createVercelAIClient,
-} from './llm_providers/index.js';
+} from "./llm_providers/index.js";
 
 // Feature detection utilities
 export {
@@ -130,7 +122,7 @@ export {
   getAvailableFeatures,
   printFeatureStatus,
   clearFeatureCache,
-} from './features.js';
+} from "./features.js";
 
 // Deduplication system
 export type {
@@ -141,7 +133,7 @@ export type {
   KeepOp,
   UpdateOp,
   ConsolidationOperation,
-} from './deduplication/index.js';
+} from "./deduplication/index.js";
 export {
   createDeduplicationConfig,
   SimilarityDetector,
@@ -149,7 +141,7 @@ export {
   applyConsolidationOperations,
   generateSimilarityReport,
   formatPairForLogging,
-} from './deduplication/index.js';
+} from "./deduplication/index.js";
 
 // Observability system (optional - requires 'opik' package)
 export {
@@ -160,4 +152,4 @@ export {
   aceTrack,
   trackRole,
   maybeTrack,
-} from './observability/index.js';
+} from "./observability/index.js";

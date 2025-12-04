@@ -2,7 +2,7 @@
  * Test helpers and mock implementations.
  */
 
-import { LLMClient, LLMResponse } from '../src/llm';
+import { LLMClient, LLMResponse } from "../src/llm";
 
 export class MockLLMClient extends LLMClient {
   /**
@@ -42,7 +42,7 @@ export class MockLLMClient extends LLMClient {
 
     if (this.responses.length === 0) {
       throw new Error(
-        'MockLLMClient has no queued responses. Use queueResponse() first.'
+        "MockLLMClient has no queued responses. Use queueResponse() first.",
       );
     }
 
@@ -63,7 +63,7 @@ export class MockLLMClient extends LLMClient {
      * Get the last prompt that was sent.
      */
     if (this.callHistory.length === 0) {
-      throw new Error('No prompts in call history');
+      throw new Error("No prompts in call history");
     }
     return this.callHistory[this.callHistory.length - 1].prompt;
   }

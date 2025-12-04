@@ -12,7 +12,12 @@
  */
 
 import { Sample, EnvironmentResult } from "./adaptation.js";
-import { AgentOutput, Reflector, ReflectorOutput, SkillManager } from "./roles.js";
+import {
+  AgentOutput,
+  Reflector,
+  ReflectorOutput,
+  SkillManager,
+} from "./roles.js";
 import { Skillbook } from "./skillbook.js";
 import { UpdateBatch } from "./updates.js";
 
@@ -129,7 +134,11 @@ export class ThreadSafeSkillbook {
   /**
    * Tag a skill (thread-safe).
    */
-  async tagSkill(skillId: string, tag: string, increment: number = 1): Promise<any | null> {
+  async tagSkill(
+    skillId: string,
+    tag: string,
+    increment: number = 1,
+  ): Promise<any | null> {
     return await this._withLock(async () => {
       return this._skillbook.tagSkill(skillId, tag, increment);
     });
@@ -142,7 +151,7 @@ export class ThreadSafeSkillbook {
     section: string,
     content: string,
     skillId?: string,
-    metadata?: Record<string, number>
+    metadata?: Record<string, number>,
   ): Promise<any> {
     return await this._withLock(async () => {
       return this._skillbook.addSkill(section, content, skillId, metadata);
@@ -157,7 +166,7 @@ export class ThreadSafeSkillbook {
     options: {
       content?: string;
       metadata?: Record<string, number>;
-    }
+    },
   ): Promise<any | null> {
     return await this._withLock(async () => {
       return this._skillbook.updateSkill(skillId, options);
@@ -310,7 +319,7 @@ export class AsyncLearningPipeline {
     this._skillManagerProcessor = this._skillManagerLoop();
 
     console.log(
-      `AsyncLearningPipeline started with ${this._maxReflectorWorkers} Reflector workers`
+      `AsyncLearningPipeline started with ${this._maxReflectorWorkers} Reflector workers`,
     );
   }
 
@@ -411,7 +420,7 @@ export class AsyncLearningPipeline {
           await Promise.race([
             promise,
             new Promise((_, reject) =>
-              setTimeout(() => reject(new Error("Timeout")), remaining * 1000)
+              setTimeout(() => reject(new Error("Timeout")), remaining * 1000),
             ),
           ]);
         } else {
@@ -488,7 +497,7 @@ export class AsyncLearningPipeline {
       // Queue for SkillManager
       if (this._skillManagerQueue.length >= this._skillManagerQueueSize) {
         console.warn(
-          `SkillManager queue full, dropping reflection for sample ${task.stepIndex}`
+          `SkillManager queue full, dropping reflection for sample ${task.stepIndex}`,
         );
         this._tasksFailed++;
         return;
@@ -558,7 +567,7 @@ export class AsyncLearningPipeline {
         await this._processSkillUpdate(result);
       } catch (error) {
         console.warn(
-          `SkillManager failed for sample ${result.task.stepIndex}: ${error}`
+          `SkillManager failed for sample ${result.task.stepIndex}: ${error}`,
         );
         this._tasksFailed++;
 
@@ -620,5 +629,4 @@ export class AsyncLearningPipeline {
       }
     }
   }
-
 }

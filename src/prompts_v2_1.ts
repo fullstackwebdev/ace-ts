@@ -13,7 +13,7 @@
  * Based on ACE v2.0 architecture with MCP presentation enhancements.
  */
 
-import type { Skillbook } from './skillbook';
+import type { Skillbook } from "./skillbook";
 
 // ================================
 // SHARED CONSTANTS
@@ -59,7 +59,7 @@ export function wrapSkillbookForExternalAgent(skillbook: Skillbook): string {
   const skills = skillbook.skills();
 
   if (skills.length === 0) {
-    return '';
+    return "";
   }
 
   // Get formatted skills from skillbook
@@ -1150,21 +1150,21 @@ export class PromptManager {
     skill_manager: Record<string, string>;
   } = {
     agent: {
-      '1.0': 'ace.prompts.AGENT_PROMPT',
-      '2.0': 'ace.prompts_v2.AGENT_V2_PROMPT',
-      '2.1': AGENT_V2_1_PROMPT,
-      '2.1-math': AGENT_MATH_V2_1_PROMPT,
-      '2.1-code': AGENT_CODE_V2_1_PROMPT,
+      "1.0": "ace.prompts.AGENT_PROMPT",
+      "2.0": "ace.prompts_v2.AGENT_V2_PROMPT",
+      "2.1": AGENT_V2_1_PROMPT,
+      "2.1-math": AGENT_MATH_V2_1_PROMPT,
+      "2.1-code": AGENT_CODE_V2_1_PROMPT,
     },
     reflector: {
-      '1.0': 'ace.prompts.REFLECTOR_PROMPT',
-      '2.0': 'ace.prompts_v2.REFLECTOR_V2_PROMPT',
-      '2.1': REFLECTOR_V2_1_PROMPT,
+      "1.0": "ace.prompts.REFLECTOR_PROMPT",
+      "2.0": "ace.prompts_v2.REFLECTOR_V2_PROMPT",
+      "2.1": REFLECTOR_V2_1_PROMPT,
     },
     skill_manager: {
-      '1.0': 'ace.prompts.SKILL_MANAGER_PROMPT',
-      '2.0': 'ace.prompts_v2.SKILL_MANAGER_V2_PROMPT',
-      '2.1': SKILL_MANAGER_V2_1_PROMPT,
+      "1.0": "ace.prompts.SKILL_MANAGER_PROMPT",
+      "2.0": "ace.prompts_v2.SKILL_MANAGER_V2_PROMPT",
+      "2.1": SKILL_MANAGER_V2_1_PROMPT,
     },
   };
 
@@ -1177,7 +1177,7 @@ export class PromptManager {
    *
    * @param defaultVersion - Default version to use (1.0, 2.0, or 2.1)
    */
-  constructor(defaultVersion: string = '2.1') {
+  constructor(defaultVersion: string = "2.1") {
     this.defaultVersion = defaultVersion;
   }
 
@@ -1200,15 +1200,15 @@ export class PromptManager {
     let prompt = PromptManager.PROMPTS.agent[promptKey];
 
     // Handle legacy v1 references
-    if (typeof prompt === 'string' && prompt.startsWith('ace.')) {
-      const moduleParts = prompt.split('.');
-      if (moduleParts.length > 2 && moduleParts[1] === 'prompts_v2') {
+    if (typeof prompt === "string" && prompt.startsWith("ace.")) {
+      const moduleParts = prompt.split(".");
+      if (moduleParts.length > 2 && moduleParts[1] === "prompts_v2") {
         // Import from prompts_v2
-        const { AGENT_V2_PROMPT } = require('./prompts_v2');
+        const { AGENT_V2_PROMPT } = require("./prompts_v2");
         prompt = AGENT_V2_PROMPT;
       } else {
         // Import from prompts
-        const { AGENT_PROMPT } = require('./prompts');
+        const { AGENT_PROMPT } = require("./prompts");
         prompt = AGENT_PROMPT;
       }
     }
@@ -1217,9 +1217,9 @@ export class PromptManager {
     this.trackUsage(`agent-${promptKey}`);
 
     // Add current date for v2+ prompts
-    if (prompt && ver.startsWith('2') && prompt.includes('{current_date}')) {
-      const currentDate = new Date().toISOString().split('T')[0];
-      prompt = prompt.replace('{current_date}', currentDate);
+    if (prompt && ver.startsWith("2") && prompt.includes("{current_date}")) {
+      const currentDate = new Date().toISOString().split("T")[0];
+      prompt = prompt.replace("{current_date}", currentDate);
     }
 
     if (!prompt) {
@@ -1239,13 +1239,13 @@ export class PromptManager {
     const ver = version || this.defaultVersion;
     let prompt = PromptManager.PROMPTS.reflector[ver];
 
-    if (typeof prompt === 'string' && prompt.startsWith('ace.')) {
-      const moduleParts = prompt.split('.');
-      if (moduleParts.length > 2 && moduleParts[1] === 'prompts_v2') {
-        const { REFLECTOR_V2_PROMPT } = require('./prompts_v2');
+    if (typeof prompt === "string" && prompt.startsWith("ace.")) {
+      const moduleParts = prompt.split(".");
+      if (moduleParts.length > 2 && moduleParts[1] === "prompts_v2") {
+        const { REFLECTOR_V2_PROMPT } = require("./prompts_v2");
         prompt = REFLECTOR_V2_PROMPT;
       } else {
-        const { REFLECTOR_PROMPT } = require('./prompts');
+        const { REFLECTOR_PROMPT } = require("./prompts");
         prompt = REFLECTOR_PROMPT;
       }
     }
@@ -1269,13 +1269,13 @@ export class PromptManager {
     const ver = version || this.defaultVersion;
     let prompt = PromptManager.PROMPTS.skill_manager[ver];
 
-    if (typeof prompt === 'string' && prompt.startsWith('ace.')) {
-      const moduleParts = prompt.split('.');
-      if (moduleParts.length > 2 && moduleParts[1] === 'prompts_v2') {
-        const { SKILL_MANAGER_V2_PROMPT } = require('./prompts_v2');
+    if (typeof prompt === "string" && prompt.startsWith("ace.")) {
+      const moduleParts = prompt.split(".");
+      if (moduleParts.length > 2 && moduleParts[1] === "prompts_v2") {
+        const { SKILL_MANAGER_V2_PROMPT } = require("./prompts_v2");
         prompt = SKILL_MANAGER_V2_PROMPT;
       } else {
-        const { SKILL_MANAGER_PROMPT } = require('./prompts');
+        const { SKILL_MANAGER_PROMPT } = require("./prompts");
         prompt = SKILL_MANAGER_PROMPT;
       }
     }
@@ -1320,7 +1320,8 @@ export class PromptManager {
     const avgQuality: Record<string, number> = {};
     for (const [promptId, scores] of Object.entries(this.qualityScores)) {
       if (scores.length > 0) {
-        avgQuality[promptId] = scores.reduce((a, b) => a + b, 0) / scores.length;
+        avgQuality[promptId] =
+          scores.reduce((a, b) => a + b, 0) / scores.length;
       }
     }
 
@@ -1351,28 +1352,29 @@ export class PromptManager {
    */
   compareVersions(
     role: string,
-    testInput: Record<string, any>
+    testInput: Record<string, any>,
   ): Record<string, string> {
     const results: Record<string, string> = {};
-    const prompts = PromptManager.PROMPTS[role as keyof typeof PromptManager.PROMPTS];
+    const prompts =
+      PromptManager.PROMPTS[role as keyof typeof PromptManager.PROMPTS];
 
     if (!prompts) {
       return results;
     }
 
     for (const version of Object.keys(prompts)) {
-      if (version.startsWith('2')) {
+      if (version.startsWith("2")) {
         const prompt = prompts[version];
-        if (typeof prompt === 'string' && !prompt.startsWith('ace.')) {
+        if (typeof prompt === "string" && !prompt.startsWith("ace.")) {
           // Format with test input
           try {
             let formatted = prompt;
             for (const [key, value] of Object.entries(testInput)) {
               formatted = formatted.replace(`{${key}}`, String(value));
             }
-            results[version] = formatted.substring(0, 500) + '...'; // Preview
+            results[version] = formatted.substring(0, 500) + "..."; // Preview
           } catch (error) {
-            results[version] = 'Missing required parameters';
+            results[version] = "Missing required parameters";
           }
         }
       }
@@ -1398,7 +1400,7 @@ interface QualityMetrics {
  */
 export function validatePromptOutputV21(
   output: string,
-  role: string
+  role: string,
 ): [boolean, string[], QualityMetrics] {
   const errors: string[] = [];
   const metrics: QualityMetrics = {};
@@ -1413,8 +1415,8 @@ export function validatePromptOutputV21(
   }
 
   // Role-specific validation with v2.1 enhancements
-  if (role === 'agent') {
-    const required = ['reasoning', 'final_answer'];
+  if (role === "agent") {
+    const required = ["reasoning", "final_answer"];
 
     for (const field of required) {
       if (!(field in data)) {
@@ -1423,7 +1425,7 @@ export function validatePromptOutputV21(
     }
 
     // Check v2.1 quality fields
-    if ('quality_check' in data) {
+    if ("quality_check" in data) {
       const qc = data.quality_check;
       metrics.completeness =
         (Number(qc.addresses_question || false) +
@@ -1433,7 +1435,7 @@ export function validatePromptOutputV21(
     }
 
     // Validate confidence scores
-    if ('confidence_scores' in data) {
+    if ("confidence_scores" in data) {
       for (const [skillId, score] of Object.entries(data.confidence_scores)) {
         const numScore = Number(score);
         if (numScore < 0 || numScore > 1) {
@@ -1444,11 +1446,11 @@ export function validatePromptOutputV21(
       }
     }
 
-    if ('answer_confidence' in data) {
+    if ("answer_confidence" in data) {
       metrics.overall_confidence = data.answer_confidence;
     }
-  } else if (role === 'reflector') {
-    const required = ['reasoning', 'error_identification', 'skill_tags'];
+  } else if (role === "reflector") {
+    const required = ["reasoning", "error_identification", "skill_tags"];
 
     for (const field of required) {
       if (!(field in data)) {
@@ -1457,10 +1459,10 @@ export function validatePromptOutputV21(
     }
 
     // Check v2.1 atomicity scoring
-    if ('extracted_learnings' in data) {
+    if ("extracted_learnings" in data) {
       const atomicityScores: number[] = [];
       for (const learning of data.extracted_learnings) {
-        if ('atomicity_score' in learning) {
+        if ("atomicity_score" in learning) {
           const score = learning.atomicity_score;
           if (score < 0 || score > 1) {
             errors.push(`Invalid atomicity score: ${score}`);
@@ -1478,15 +1480,15 @@ export function validatePromptOutputV21(
 
     // Validate tags
     for (const tag of data.skill_tags || []) {
-      if (!['helpful', 'harmful', 'neutral'].includes(tag.tag)) {
+      if (!["helpful", "harmful", "neutral"].includes(tag.tag)) {
         errors.push(`Invalid tag: ${tag.tag}`);
       }
-      if ('impact_score' in tag) {
+      if ("impact_score" in tag) {
         metrics[`impact_${tag.id}`] = tag.impact_score;
       }
     }
-  } else if (role === 'skill_manager') {
-    const required = ['reasoning', 'operations'];
+  } else if (role === "skill_manager") {
+    const required = ["reasoning", "operations"];
 
     for (const field of required) {
       if (!(field in data)) {
@@ -1495,7 +1497,7 @@ export function validatePromptOutputV21(
     }
 
     // Check v2.1 quality metrics
-    if ('quality_metrics' in data) {
+    if ("quality_metrics" in data) {
       const qm = data.quality_metrics;
       metrics.avg_atomicity = qm.avg_atomicity || 0;
       metrics.estimated_impact = qm.estimated_impact || 0;
@@ -1503,11 +1505,11 @@ export function validatePromptOutputV21(
 
     // Validate operations with atomicity
     for (const op of data.operations || []) {
-      if (!['ADD', 'UPDATE', 'TAG', 'REMOVE'].includes(op.type)) {
+      if (!["ADD", "UPDATE", "TAG", "REMOVE"].includes(op.type)) {
         errors.push(`Invalid operation type: ${op.type}`);
       }
 
-      if ('atomicity_score' in op) {
+      if ("atomicity_score" in op) {
         const score = op.atomicity_score;
         if (score < 0 || score > 1) {
           errors.push(`Invalid atomicity score: ${score}`);
@@ -1633,42 +1635,43 @@ New fields are optional additions only.
  * @returns Comparison metrics and statistics
  */
 export function comparePromptVersions(
-  role: string = 'agent'
+  role: string = "agent",
 ): Record<string, any> {
   const comparisons: Record<string, any> = {};
 
   // Get prompts for comparison
   const manager = new PromptManager();
-  let v20Prompt = '';
-  let v21Prompt = '';
+  let v20Prompt = "";
+  let v21Prompt = "";
 
-  if (role === 'agent') {
-    v20Prompt = manager.getAgentPrompt(undefined, '2.0');
-    v21Prompt = manager.getAgentPrompt(undefined, '2.1');
-  } else if (role === 'reflector') {
-    v20Prompt = manager.getReflectorPrompt('2.0');
-    v21Prompt = manager.getReflectorPrompt('2.1');
-  } else if (role === 'skill_manager') {
-    v20Prompt = manager.getSkillManagerPrompt('2.0');
-    v21Prompt = manager.getSkillManagerPrompt('2.1');
+  if (role === "agent") {
+    v20Prompt = manager.getAgentPrompt(undefined, "2.0");
+    v21Prompt = manager.getAgentPrompt(undefined, "2.1");
+  } else if (role === "reflector") {
+    v20Prompt = manager.getReflectorPrompt("2.0");
+    v21Prompt = manager.getReflectorPrompt("2.1");
+  } else if (role === "skill_manager") {
+    v20Prompt = manager.getSkillManagerPrompt("2.0");
+    v21Prompt = manager.getSkillManagerPrompt("2.1");
   }
 
   // Calculate metrics
   comparisons.length_v20 = v20Prompt.length;
   comparisons.length_v21 = v21Prompt.length;
-  comparisons.length_increase = (v21Prompt.length - v20Prompt.length) / v20Prompt.length;
+  comparisons.length_increase =
+    (v21Prompt.length - v20Prompt.length) / v20Prompt.length;
 
   // Count key improvements
   const v21Features = {
-    quick_reference: v21Prompt.includes('⚡ QUICK REFERENCE ⚡'),
+    quick_reference: v21Prompt.includes("⚡ QUICK REFERENCE ⚡"),
     mandatory_markers: (v21Prompt.match(/MANDATORY/g) || []).length,
     critical_markers: (v21Prompt.match(/CRITICAL/g) || []).length,
     forbidden_markers: (v21Prompt.match(/FORBIDDEN/g) || []).length,
-    visual_indicators: v21Prompt.includes('✓') || v21Prompt.includes('✗'),
+    visual_indicators: v21Prompt.includes("✓") || v21Prompt.includes("✗"),
     atomicity_mentions:
       (v21Prompt.match(/atomic/gi) || []).length +
       (v21Prompt.match(/ATOMIC/g) || []).length,
-    when_sections: v21Prompt.includes('WHEN TO'),
+    when_sections: v21Prompt.includes("WHEN TO"),
   };
 
   comparisons.v21_enhancements = v21Features;

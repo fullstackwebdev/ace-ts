@@ -2,7 +2,7 @@
  * Configuration for skill deduplication.
  */
 
-export type EmbeddingProvider = 'vercel-ai' | 'sentence-transformers';
+export type EmbeddingProvider = "vercel-ai" | "sentence-transformers";
 
 export interface DeduplicationConfig {
   /**
@@ -38,16 +38,16 @@ export interface DeduplicationConfig {
 }
 
 export function createDeduplicationConfig(
-  overrides?: Partial<DeduplicationConfig>
+  overrides?: Partial<DeduplicationConfig>,
 ): DeduplicationConfig {
   return {
     enabled: true,
-    embeddingModel: 'text-embedding-3-small',
-    embeddingProvider: 'vercel-ai',
+    embeddingModel: "text-embedding-3-small",
+    embeddingProvider: "vercel-ai",
     similarityThreshold: 0.85,
     minPairsToReport: 1,
     withinSectionOnly: true,
-    localModelName: 'all-MiniLM-L6-v2',
+    localModelName: "all-MiniLM-L6-v2",
     ...overrides,
   };
 }

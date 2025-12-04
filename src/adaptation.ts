@@ -6,15 +6,15 @@
  * - OnlineACE: Sequential learning from streaming samples
  */
 
-import { Skillbook } from './skillbook';
+import { Skillbook } from "./skillbook";
 import {
   Agent,
   AgentOutput,
   Reflector,
   ReflectorOutput,
   SkillManager,
-} from './roles';
-import { UpdateBatch } from './updates';
+} from "./roles";
+import { UpdateBatch } from "./updates";
 
 /**
  * Single task instance presented to ACE.
@@ -176,7 +176,7 @@ abstract class ACEBase {
    * Get reflection context from recent reflections.
    */
   protected reflectionContext(): string {
-    return this.recentReflections.join('\n---\n');
+    return this.recentReflections.join("\n---\n");
   }
 
   /**
@@ -187,7 +187,7 @@ abstract class ACEBase {
     this.recentReflections.push(serialized);
     if (this.recentReflections.length > this.reflectionWindow) {
       this.recentReflections = this.recentReflections.slice(
-        -this.reflectionWindow
+        -this.reflectionWindow,
       );
     }
   }
@@ -199,7 +199,7 @@ abstract class ACEBase {
     // Tag helpful skills
     for (const skillId of reflection.helpful_skill_ids) {
       try {
-        this.skillbook.tagSkill(skillId, 'helpful');
+        this.skillbook.tagSkill(skillId, "helpful");
       } catch (error) {
         // Skip invalid skill IDs
         continue;
@@ -209,7 +209,7 @@ abstract class ACEBase {
     // Tag harmful skills
     for (const skillId of reflection.harmful_skill_ids) {
       try {
-        this.skillbook.tagSkill(skillId, 'harmful');
+        this.skillbook.tagSkill(skillId, "harmful");
       } catch (error) {
         // Skip invalid skill IDs
         continue;
@@ -222,16 +222,16 @@ abstract class ACEBase {
    */
   protected questionContext(
     sample: Sample,
-    environmentResult: EnvironmentResult
+    environmentResult: EnvironmentResult,
   ): string {
     const parts = [
       `question: ${sample.question}`,
-      `context: ${sample.context || ''}`,
+      `context: ${sample.context || ""}`,
       `metadata: ${JSON.stringify(sample.metadata || {})}`,
       `feedback: ${environmentResult.feedback}`,
-      `ground_truth: ${environmentResult.groundTruth || ''}`,
+      `ground_truth: ${environmentResult.groundTruth || ""}`,
     ];
-    return parts.join('\n');
+    return parts.join("\n");
   }
 
   /**
@@ -241,7 +241,7 @@ abstract class ACEBase {
     epoch: number,
     totalEpochs: number,
     step: number,
-    totalSteps: number
+    totalSteps: number,
   ): string {
     return `epoch ${epoch}/${totalEpochs} · sample ${step}/${totalSteps}`;
   }
@@ -250,24 +250,24 @@ abstract class ACEBase {
    * Calculate performance score from metrics.
    */
   protected calculatePerformanceScore(
-    metrics: Record<string, number> | undefined
+    metrics: Record<string, number> | undefined,
   ): number {
     if (!metrics) return 0.0;
 
     // Only use boolean/probability metrics that represent success/quality (0-1 range)
     const scoreKeys = [
-      'correct',
-      'efficient',
-      'success',
-      'accuracy',
-      'score',
-      'syntax_valid',
-      'contains_required',
+      "correct",
+      "efficient",
+      "success",
+      "accuracy",
+      "score",
+      "syntax_valid",
+      "contains_required",
     ];
 
     const scoreMetrics: number[] = [];
     for (const [key, value] of Object.entries(metrics)) {
-      if (scoreKeys.includes(key) && typeof value === 'number') {
+      if (scoreKeys.includes(key) && typeof value === "number") {
         scoreMetrics.push(value);
       }
     }
@@ -285,7 +285,7 @@ abstract class ACEBase {
     epoch: number,
     _totalEpochs: number,
     stepIndex: number,
-    _totalSteps: number
+    _totalSteps: number,
   ): Promise<ACEStepResult> {
     // Step 1: Agent generates answer
     const agentOutput = await this.agent.generate({
@@ -418,7 +418,7 @@ export class OfflineACE extends ACEBase {
   async run(
     samples: Sample[],
     environment: TaskEnvironment,
-    options: OfflineACERunOptions = {}
+    options: OfflineACERunOptions = {},
   ): Promise<ACEStepResult[]> {
     const epochs = options.epochs || 1;
     const checkpointInterval = options.checkpointInterval;
@@ -427,7 +427,7 @@ export class OfflineACE extends ACEBase {
     // Validate checkpoint parameters
     if (checkpointInterval !== undefined && !checkpointDir) {
       throw new Error(
-        'checkpointDir must be provided when checkpointInterval is set'
+        "checkpointDir must be provided when checkpointInterval is set",
       );
     }
 
@@ -447,7 +447,7 @@ export class OfflineACE extends ACEBase {
             epoch,
             epochs,
             stepIdx,
-            totalSteps
+            totalSteps,
           );
           results.push(result);
 
@@ -463,7 +463,7 @@ export class OfflineACE extends ACEBase {
             await this.skillbook.saveToFile(numberedCheckpoint);
             await this.skillbook.saveToFile(latestCheckpoint);
             console.log(
-              `Checkpoint saved: ${results.length} samples → ${numberedCheckpoint}`
+              `Checkpoint saved: ${results.length} samples → ${numberedCheckpoint}`,
             );
           }
         } catch (error) {
@@ -471,7 +471,7 @@ export class OfflineACE extends ACEBase {
           const errorMsg =
             error instanceof Error ? error.message : String(error);
           console.warn(
-            `Failed to process sample ${stepIdx}/${totalSteps} in epoch ${epoch}/${epochs}: ${errorMsg.slice(0, 200)}`
+            `Failed to process sample ${stepIdx}/${totalSteps} in epoch ${epoch}/${epochs}: ${errorMsg.slice(0, 200)}`,
           );
           failedSamples.push({
             epoch,
@@ -486,7 +486,7 @@ export class OfflineACE extends ACEBase {
     // Report failure summary if any samples failed
     if (failedSamples.length > 0) {
       console.log(
-        `Training completed with ${failedSamples.length} failed samples out of ${samples.length * epochs} total attempts`
+        `Training completed with ${failedSamples.length} failed samples out of ${samples.length * epochs} total attempts`,
       );
     }
 
@@ -553,7 +553,7 @@ export class OnlineACE extends ACEBase {
    */
   async run(
     samples: Sample[],
-    environment: TaskEnvironment
+    environment: TaskEnvironment,
   ): Promise<ACEStepResult[]> {
     const results: ACEStepResult[] = [];
 
@@ -566,7 +566,7 @@ export class OnlineACE extends ACEBase {
         1, // epoch
         1, // totalEpochs
         stepIdx,
-        stepIdx // totalSteps (unknown for streaming)
+        stepIdx, // totalSteps (unknown for streaming)
       );
       results.push(result);
     }

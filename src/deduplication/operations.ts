@@ -2,7 +2,7 @@
  * Consolidation operations for skill deduplication.
  */
 
-import type { Skillbook, SimilarityDecision } from '../skillbook.js';
+import type { Skillbook, SimilarityDecision } from "../skillbook.js";
 
 const logger = {
   info: (msg: string) => console.log(`[INFO] ${msg}`),
@@ -17,7 +17,7 @@ export interface MergeOp {
    * Combines helpful/harmful counts from all source skills into the kept skill.
    * Other skills are soft-deleted.
    */
-  type: 'MERGE';
+  type: "MERGE";
   source_ids: string[]; // All skills being merged
   merged_content: string; // New combined content
   keep_id: string; // Which ID to keep (others deleted)
@@ -28,7 +28,7 @@ export interface DeleteOp {
   /**
    * Soft-delete a skill as redundant.
    */
-  type: 'DELETE';
+  type: "DELETE";
   skill_id: string;
   reasoning: string;
 }
@@ -37,7 +37,7 @@ export interface KeepOp {
   /**
    * Keep both skills separate (they serve different purposes).
    */
-  type: 'KEEP';
+  type: "KEEP";
   skill_ids: string[];
   differentiation: string; // How they differ
   reasoning: string;
@@ -47,7 +47,7 @@ export interface UpdateOp {
   /**
    * Update a skill's content to differentiate it.
    */
-  type: 'UPDATE';
+  type: "UPDATE";
   skill_id: string;
   new_content: string;
   reasoning: string;
@@ -58,7 +58,7 @@ export type ConsolidationOperation = MergeOp | DeleteOp | KeepOp | UpdateOp;
 
 export function applyConsolidationOperations(
   operations: ConsolidationOperation[],
-  skillbook: Skillbook
+  skillbook: Skillbook,
 ): void {
   /**
    * Apply a list of consolidation operations to a skillbook.
@@ -68,13 +68,13 @@ export function applyConsolidationOperations(
    *   skillbook: Skillbook to modify
    */
   for (const op of operations) {
-    if (op.type === 'MERGE') {
+    if (op.type === "MERGE") {
       applyMerge(op, skillbook);
-    } else if (op.type === 'DELETE') {
+    } else if (op.type === "DELETE") {
       applyDelete(op, skillbook);
-    } else if (op.type === 'KEEP') {
+    } else if (op.type === "KEEP") {
       applyKeep(op, skillbook);
-    } else if (op.type === 'UPDATE') {
+    } else if (op.type === "UPDATE") {
       applyUpdate(op, skillbook);
     } else {
       logger.warning(`Unknown operation type: ${(op as any).type}`);
@@ -145,7 +145,7 @@ function applyKeep(op: KeepOp, skillbook: Skillbook): void {
    * Apply a KEEP operation (store decision).
    */
   if (op.skill_ids.length < 2) {
-    logger.warning('KEEP: Need at least 2 skill IDs');
+    logger.warning("KEEP: Need at least 2 skill IDs");
     return;
   }
 
@@ -156,7 +156,7 @@ function applyKeep(op: KeepOp, skillbook: Skillbook): void {
       const idB = op.skill_ids[j];
 
       const decision: SimilarityDecision = {
-        decision: 'KEEP',
+        decision: "KEEP",
         reasoning: op.reasoning || op.differentiation,
         decided_at: new Date().toISOString(),
         similarity_at_decision: 0.0, // We don't have the score here

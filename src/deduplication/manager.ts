@@ -2,10 +2,10 @@
  * Deduplication manager for coordinating similarity detection and operations.
  */
 
-import type { Skillbook } from '../skillbook.js';
-import type { DeduplicationConfig } from './config.js';
-import { createDeduplicationConfig } from './config.js';
-import { SimilarityDetector } from './detector.js';
+import type { Skillbook } from "../skillbook.js";
+import type { DeduplicationConfig } from "./config.js";
+import { createDeduplicationConfig } from "./config.js";
+import { SimilarityDetector } from "./detector.js";
 import {
   ConsolidationOperation,
   DeleteOp,
@@ -13,8 +13,8 @@ import {
   MergeOp,
   UpdateOp,
   applyConsolidationOperations,
-} from './operations.js';
-import { formatPairForLogging, generateSimilarityReport } from './prompts.js';
+} from "./operations.js";
+import { formatPairForLogging, generateSimilarityReport } from "./prompts.js";
 
 const logger = {
   info: (msg: string) => console.log(`[INFO] ${msg}`),
@@ -74,7 +74,7 @@ export class DeduplicationManager {
       if (similarPairs.length > 0) {
         logger.debug(
           `Found ${similarPairs.length} similar pairs, ` +
-            `below threshold of ${this.config.minPairsToReport}`
+            `below threshold of ${this.config.minPairsToReport}`,
         );
       }
       return null;
@@ -91,7 +91,7 @@ export class DeduplicationManager {
   }
 
   parseConsolidationOperations(
-    responseData: Record<string, any>
+    responseData: Record<string, any>,
   ): ConsolidationOperation[] {
     /**
      * Parse consolidation operations from SkillManager response.
@@ -106,45 +106,45 @@ export class DeduplicationManager {
     const rawOps = responseData.consolidation_operations || [];
 
     if (!Array.isArray(rawOps)) {
-      logger.warning('consolidation_operations is not a list');
+      logger.warning("consolidation_operations is not a list");
       return operations;
     }
 
     for (const rawOp of rawOps) {
-      if (typeof rawOp !== 'object' || rawOp === null) {
+      if (typeof rawOp !== "object" || rawOp === null) {
         continue;
       }
 
-      const opType = (rawOp.type || '').toUpperCase();
+      const opType = (rawOp.type || "").toUpperCase();
 
       try {
-        if (opType === 'MERGE') {
+        if (opType === "MERGE") {
           operations.push({
-            type: 'MERGE',
+            type: "MERGE",
             source_ids: rawOp.source_ids || [],
-            merged_content: rawOp.merged_content || '',
-            keep_id: rawOp.keep_id || '',
-            reasoning: rawOp.reasoning || '',
+            merged_content: rawOp.merged_content || "",
+            keep_id: rawOp.keep_id || "",
+            reasoning: rawOp.reasoning || "",
           } as MergeOp);
-        } else if (opType === 'DELETE') {
+        } else if (opType === "DELETE") {
           operations.push({
-            type: 'DELETE',
-            skill_id: rawOp.skill_id || '',
-            reasoning: rawOp.reasoning || '',
+            type: "DELETE",
+            skill_id: rawOp.skill_id || "",
+            reasoning: rawOp.reasoning || "",
           } as DeleteOp);
-        } else if (opType === 'KEEP') {
+        } else if (opType === "KEEP") {
           operations.push({
-            type: 'KEEP',
+            type: "KEEP",
             skill_ids: rawOp.skill_ids || [],
-            differentiation: rawOp.differentiation || '',
-            reasoning: rawOp.reasoning || '',
+            differentiation: rawOp.differentiation || "",
+            reasoning: rawOp.reasoning || "",
           } as KeepOp);
-        } else if (opType === 'UPDATE') {
+        } else if (opType === "UPDATE") {
           operations.push({
-            type: 'UPDATE',
-            skill_id: rawOp.skill_id || '',
-            new_content: rawOp.new_content || '',
-            reasoning: rawOp.reasoning || '',
+            type: "UPDATE",
+            skill_id: rawOp.skill_id || "",
+            new_content: rawOp.new_content || "",
+            reasoning: rawOp.reasoning || "",
           } as UpdateOp);
         } else {
           logger.warning(`Unknown consolidation operation type: ${opType}`);
@@ -160,7 +160,7 @@ export class DeduplicationManager {
 
   applyOperations(
     operations: ConsolidationOperation[],
-    skillbook: Skillbook
+    skillbook: Skillbook,
   ): void {
     /**
      * Apply consolidation operations to the skillbook.
@@ -179,7 +179,7 @@ export class DeduplicationManager {
 
   applyOperationsFromResponse(
     responseData: Record<string, any>,
-    skillbook: Skillbook
+    skillbook: Skillbook,
   ): ConsolidationOperation[] {
     /**
      * Parse and apply consolidation operations from SkillManager response.

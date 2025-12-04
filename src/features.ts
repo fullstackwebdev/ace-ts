@@ -41,63 +41,63 @@ function checkImport(_moduleName: string): boolean {
  * Check if Vercel AI SDK is available.
  */
 export function hasVercelAI(): boolean {
-  return checkImport('ai');
+  return checkImport("ai");
 }
 
 /**
  * Check if OpenAI SDK is available.
  */
 export function hasOpenAI(): boolean {
-  return checkImport('openai');
+  return checkImport("openai");
 }
 
 /**
  * Check if Anthropic SDK is available.
  */
 export function hasAnthropic(): boolean {
-  return checkImport('@anthropic-ai/sdk');
+  return checkImport("@anthropic-ai/sdk");
 }
 
 /**
  * Check if Google Generative AI SDK is available.
  */
 export function hasGoogleAI(): boolean {
-  return checkImport('@google/generative-ai');
+  return checkImport("@google/generative-ai");
 }
 
 /**
  * Check if LangChain is available.
  */
 export function hasLangChain(): boolean {
-  return checkImport('@langchain/core');
+  return checkImport("@langchain/core");
 }
 
 /**
  * Check if Playwright browser automation is available.
  */
 export function hasPlaywright(): boolean {
-  return checkImport('playwright');
+  return checkImport("playwright");
 }
 
 /**
  * Check if Puppeteer browser automation is available.
  */
 export function hasPuppeteer(): boolean {
-  return checkImport('puppeteer');
+  return checkImport("puppeteer");
 }
 
 /**
  * Check if Zod schema validation is available.
  */
 export function hasZod(): boolean {
-  return checkImport('zod');
+  return checkImport("zod");
 }
 
 /**
  * Check if dotenv environment loader is available.
  */
 export function hasDotenv(): boolean {
-  return checkImport('dotenv');
+  return checkImport("dotenv");
 }
 
 /**
@@ -112,14 +112,14 @@ export function hasNumpy(): boolean {
  * Check if sentence-transformers library is available.
  */
 export function hasSentenceTransformers(): boolean {
-  return checkImport('sentence-transformers');
+  return checkImport("sentence-transformers");
 }
 
 /**
  * Check if Opik observability platform is available.
  */
 export function hasOpik(): boolean {
-  return checkImport('opik');
+  return checkImport("opik");
 }
 
 /**
@@ -155,17 +155,17 @@ export function getAvailableFeatures(): Record<string, boolean> {
 export function printFeatureStatus(): void {
   const features = getAvailableFeatures();
 
-  console.log('\n' + '='.repeat(50));
-  console.log('ACE Framework - Available Features');
-  console.log('='.repeat(50));
+  console.log("\n" + "=".repeat(50));
+  console.log("ACE Framework - Available Features");
+  console.log("=".repeat(50));
 
   for (const [feature, available] of Object.entries(features)) {
-    const status = available ? '✓ Available' : '✗ Not installed';
+    const status = available ? "✓ Available" : "✗ Not installed";
     const paddedFeature = feature.padEnd(15);
     console.log(`  ${paddedFeature} ${status}`);
   }
 
-  console.log('='.repeat(50) + '\n');
+  console.log("=".repeat(50) + "\n");
 }
 
 /**

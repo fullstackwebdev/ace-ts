@@ -59,7 +59,7 @@ export class OpikIntegration {
   constructor(
     projectName: string = "ace-framework",
     enableAutoConfig: boolean = true,
-    tags?: string[]
+    tags?: string[],
   ) {
     this.projectName = projectName;
     this.tags = tags || ["ace-framework"];
@@ -80,13 +80,13 @@ export class OpikIntegration {
         console.info(`Opik configured for project: ${projectName}`);
       } catch (e) {
         console.debug(
-          `Opik configuration skipped: ${e instanceof Error ? e.message : String(e)}`
+          `Opik configuration skipped: ${e instanceof Error ? e.message : String(e)}`,
         );
         this.enabled = false;
       }
     } else if (!OPIK_AVAILABLE) {
       console.debug(
-        "Opik not available. Install with: npm install opik (optional)"
+        "Opik not available. Install with: npm install opik (optional)",
       );
     }
   }
@@ -101,7 +101,7 @@ export class OpikIntegration {
     harmfulCount: number,
     neutralCount: number,
     section: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): void {
     if (!this.enabled || !opikContext) {
       return;
@@ -135,7 +135,7 @@ export class OpikIntegration {
       });
     } catch (e) {
       console.error(
-        `Failed to log skill evolution: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to log skill evolution: ${e instanceof Error ? e.message : String(e)}`,
       );
     }
   }
@@ -149,7 +149,7 @@ export class OpikIntegration {
     skillsUpdated: number = 0,
     skillsRemoved: number = 0,
     totalSkills: number = 0,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): void {
     if (!this.enabled || !opikContext) {
       return;
@@ -176,7 +176,7 @@ export class OpikIntegration {
       });
     } catch (e) {
       console.error(
-        `Failed to log skillbook update: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to log skillbook update: ${e instanceof Error ? e.message : String(e)}`,
       );
     }
   }
@@ -190,7 +190,7 @@ export class OpikIntegration {
     success: boolean,
     inputData?: Record<string, any>,
     outputData?: Record<string, any>,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): void {
     if (!this.enabled || !opikContext) {
       return;
@@ -222,7 +222,7 @@ export class OpikIntegration {
       });
     } catch (e) {
       console.error(
-        `Failed to log role performance: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to log role performance: ${e instanceof Error ? e.message : String(e)}`,
       );
     }
   }
@@ -237,7 +237,7 @@ export class OpikIntegration {
     skillCount: number,
     successfulPredictions: number,
     totalPredictions: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): void {
     if (!this.enabled || !opikContext) {
       return;
@@ -274,7 +274,7 @@ export class OpikIntegration {
       });
     } catch (e) {
       console.error(
-        `Failed to log adaptation metrics: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to log adaptation metrics: ${e instanceof Error ? e.message : String(e)}`,
       );
     }
   }
@@ -285,7 +285,7 @@ export class OpikIntegration {
   createExperiment(
     name: string,
     description: string = "",
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): void {
     if (!this.enabled || !opikContext) {
       return;
@@ -306,7 +306,7 @@ export class OpikIntegration {
       console.info(`Opik experiment created: ${name}`);
     } catch (e) {
       console.error(
-        `Failed to create experiment: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to create experiment: ${e instanceof Error ? e.message : String(e)}`,
       );
     }
   }
@@ -328,12 +328,12 @@ export class OpikIntegration {
       // Vercel AI SDK has built-in telemetry support
       // This would require custom middleware integration
       console.info(
-        "Vercel AI SDK callback setup - requires custom telemetry middleware"
+        "Vercel AI SDK callback setup - requires custom telemetry middleware",
       );
       return true;
     } catch (e) {
       console.error(
-        `Failed to setup Vercel AI callback: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to setup Vercel AI callback: ${e instanceof Error ? e.message : String(e)}`,
       );
       return false;
     }
@@ -366,7 +366,7 @@ export class OpikIntegration {
       await this.client.flush();
     } catch (e) {
       console.error(
-        `Failed to flush Opik traces: ${e instanceof Error ? e.message : String(e)}`
+        `Failed to flush Opik traces: ${e instanceof Error ? e.message : String(e)}`,
       );
     }
   }
@@ -385,7 +385,7 @@ export function getIntegration(): OpikIntegration {
       _globalIntegration = new OpikIntegration(
         "ace-framework",
         false,
-        undefined
+        undefined,
       );
       _globalIntegration.enabled = false;
     } else {
@@ -400,12 +400,12 @@ export function getIntegration(): OpikIntegration {
  */
 export function configureOpik(
   projectName: string = "ace-framework",
-  tags?: string[]
+  tags?: string[],
 ): OpikIntegration {
   if (_shouldSkipOpik()) {
     // Return disabled integration when OPIK_DISABLED is set
     console.debug(
-      "Opik configuration skipped via OPIK_DISABLED environment variable"
+      "Opik configuration skipped via OPIK_DISABLED environment variable",
     );
     _globalIntegration = new OpikIntegration(projectName, false, tags);
     _globalIntegration.enabled = false;

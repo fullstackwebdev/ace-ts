@@ -2,12 +2,12 @@
  * Simple ACE integration - equivalent to ACELiteLLM in Python
  */
 
-import { LanguageModel } from 'ai';
-import { Skillbook } from '../skillbook.js';
-import { Agent } from '../roles.js';
-import { Reflector } from '../roles.js';
-import { SkillManager } from '../roles.js';
-import { VercelAIClient } from '../llm.js';
+import { LanguageModel } from "ai";
+import { Skillbook } from "../skillbook.js";
+import { Agent } from "../roles.js";
+import { Reflector } from "../roles.js";
+import { SkillManager } from "../roles.js";
+import { VercelAIClient } from "../llm.js";
 
 export interface ACEAgentConfig {
   /** The language model to use (from Vercel AI SDK) */
@@ -106,7 +106,7 @@ export class ACEAgent {
     const reflection = await this.reflector.reflect({
       question,
       generatorAnswer: output.final_answer,
-      feedback: 'Answer generated successfully',
+      feedback: "Answer generated successfully",
       skillbook: this.skillbook,
     });
 
@@ -136,7 +136,11 @@ export class ACEAgent {
     this.skillbookPath = path;
   }
 
-  static fromSkillbook(skillbookPath: string, model: LanguageModel, modelOptions?: any): ACEAgent {
+  static fromSkillbook(
+    skillbookPath: string,
+    model: LanguageModel,
+    modelOptions?: any,
+  ): ACEAgent {
     /**
      * Load an ACEAgent with a pre-trained skillbook.
      *
