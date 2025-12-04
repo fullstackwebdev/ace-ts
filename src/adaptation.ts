@@ -13,8 +13,8 @@ import {
   Reflector,
   ReflectorOutput,
   SkillManager,
-  SkillManagerOutput,
 } from './roles';
+import { UpdateBatch } from './updates';
 
 /**
  * Single task instance presented to ACE.
@@ -125,7 +125,7 @@ export interface ACEStepResult {
   agentOutput: AgentOutput;
   environmentResult: EnvironmentResult;
   reflection: ReflectorOutput;
-  skillManagerOutput: SkillManagerOutput;
+  updateBatch: UpdateBatch;
   skillbookSnapshot: string;
   epoch: number;
   step: number;
@@ -303,15 +303,13 @@ abstract class ACEBase {
     this.updateRecentReflections(reflection);
 
     // Step 5: SkillManager updates skillbook
-    const skillManagerOutput = await this.skillManager.updateSkills(
-      reflection,
-      this.skillbook,
-      this.questionContext(sample, envResult),
-      this.progressString(epoch, totalEpochs, stepIndex, totalSteps)
-    );
+    const updateBatch = await this.skillManager.curate({
+      reflectionAnalysis: reflection.analysis,
+      skillbook: this.skillbook,
+    });
 
     // Step 6: Apply update to skillbook
-    this.skillbook.applyUpdate(skillManagerOutput.update);
+    this.skillbook.applyUpdate(updateBatch);
 
     // Calculate performance score
     const performanceScore = this.calculatePerformanceScore(envResult.metrics);
@@ -321,7 +319,7 @@ abstract class ACEBase {
       agentOutput,
       environmentResult: envResult,
       reflection,
-      skillManagerOutput,
+      updateBatch,
       skillbookSnapshot: this.skillbook.asPrompt(),
       epoch,
       step: stepIndex,
