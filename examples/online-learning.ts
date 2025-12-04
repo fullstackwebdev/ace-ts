@@ -114,11 +114,12 @@ async function main() {
   results.forEach((result, idx) => {
     const isCorrect = result.environmentResult.metrics?.correct === 1.0;
     const symbol = isCorrect ? '✅' : '❌';
+    const answer = result.agentOutput.finalAnswer || result.agentOutput.answer || 'N/A';
     console.log(
       `   ${idx + 1}. ${symbol} ${result.sample.question}`
     );
     console.log(
-      `      Answer: ${result.agentOutput.finalAnswer.slice(0, 60)}`
+      `      Answer: ${answer.slice(0, 60)}`
     );
     console.log(
       `      Feedback: ${result.environmentResult.feedback}\n`
@@ -145,10 +146,13 @@ async function main() {
 
   // Show skillbook statistics
   const stats = ace.getSkillbook().stats();
-  console.log('📊 Skillbook Statistics:');
-  console.log(`   Total skills: ${stats.total}`);
-  console.log(`   Average helpful: ${stats.avgHelpful.toFixed(2)}`);
-  console.log(`   Average harmful: ${stats.avgHarmful.toFixed(2)}`);
+  console.log('\n📊 Skillbook Statistics:');
+  console.log(`   Total skills: ${stats.skills}`);
+  console.log(`   Total sections: ${stats.sections}`);
+  console.log(`   Tags:`);
+  console.log(`      Helpful: ${stats.tags.helpful}`);
+  console.log(`      Harmful: ${stats.tags.harmful}`);
+  console.log(`      Neutral: ${stats.tags.neutral}`);
 
   // Save updated skillbook
   const skillbookPath = './online_skillbook.json';
