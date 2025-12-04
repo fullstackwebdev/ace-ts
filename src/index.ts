@@ -61,3 +61,19 @@ export {
 
 // Simple integration class (similar to ACELiteLLM)
 export { ACEAgent } from './integrations/simple.js';
+
+// Feature detection utilities
+export {
+  hasVercelAI,
+  hasOpenAI,
+  hasAnthropic,
+  hasGoogleAI,
+  hasLangChain,
+  hasPlaywright,
+  hasPuppeteer,
+  hasZod,
+  hasDotenv,
+  getAvailableFeatures,
+  printFeatureStatus,
+  clearFeatureCache,
+} from './features.js';
