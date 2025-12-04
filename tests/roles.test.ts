@@ -98,11 +98,7 @@ describe('Agent', () => {
   });
 
   test('extracts skill IDs from reasoning with citations', async () => {
-    const skill = skillbook.addSkill({
-      section: 'math',
-      content: 'Show your work',
-      skill_id: 'math-001',
-    });
+    skillbook.addSkill('math', 'Show your work', 'math-001');
 
     mockLLM.queueResponse(
       JSON.stringify({
@@ -216,11 +212,7 @@ describe('Reflector', () => {
   });
 
   test('identifies helpful skills', async () => {
-    const skill = skillbook.addSkill({
-      section: 'math',
-      content: 'Show your work',
-      skill_id: 'b1',
-    });
+    skillbook.addSkill('math', 'Show your work', 'b1');
 
     mockLLM.queueResponse(
       JSON.stringify({
@@ -245,11 +237,7 @@ describe('Reflector', () => {
   });
 
   test('identifies harmful skills', async () => {
-    const skill = skillbook.addSkill({
-      section: 'math',
-      content: 'Skip showing work',
-      skill_id: 'b_bad',
-    });
+    skillbook.addSkill('math', 'Skip showing work', 'b_bad');
 
     mockLLM.queueResponse(
       JSON.stringify({
@@ -362,11 +350,7 @@ describe('SkillManager', () => {
   });
 
   test('creates TAG operation', async () => {
-    const skill = skillbook.addSkill({
-      section: 'math',
-      content: 'Show your work',
-      skill_id: 'b1',
-    });
+    skillbook.addSkill('math', 'Show your work', 'b1');
 
     mockLLM.queueResponse(
       JSON.stringify({
@@ -443,11 +427,7 @@ describe('SkillManager', () => {
   });
 
   test('creates UPDATE operation', async () => {
-    const skill = skillbook.addSkill({
-      section: 'math',
-      content: 'Original content',
-      skill_id: 'b1',
-    });
+    skillbook.addSkill('math', 'Original content', 'b1');
 
     mockLLM.queueResponse(
       JSON.stringify({
@@ -475,11 +455,7 @@ describe('SkillManager', () => {
   });
 
   test('creates REMOVE operation', async () => {
-    const skill = skillbook.addSkill({
-      section: 'math',
-      content: 'Outdated strategy',
-      skill_id: 'b_old',
-    });
+    skillbook.addSkill('math', 'Outdated strategy', 'b_old');
 
     mockLLM.queueResponse(
       JSON.stringify({
