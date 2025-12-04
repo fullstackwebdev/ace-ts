@@ -46,5 +46,18 @@ export {
   createSkillManagerPrompt,
 } from './prompts.js';
 
+// Adaptation loops
+export {
+  Sample,
+  EnvironmentResult,
+  TaskEnvironment,
+  SimpleEnvironment,
+  ACEStepResult,
+  ACEConfig,
+  OfflineACE,
+  OfflineACERunOptions,
+  OnlineACE,
+} from './adaptation.js';
+
 // Simple integration class (similar to ACELiteLLM)
 export { ACEAgent } from './integrations/simple.js';
