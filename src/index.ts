@@ -91,6 +91,18 @@ export {
   OnlineACE,
 } from './adaptation.js';
 
+// Async learning infrastructure
+export type {
+  LearningTask,
+  ReflectionResult,
+  AsyncLearningPipelineOptions,
+  AsyncLearningPipelineStats,
+} from './async_learning.js';
+export {
+  ThreadSafeSkillbook,
+  AsyncLearningPipeline,
+} from './async_learning.js';
+
 // Simple integration class (similar to ACELiteLLM)
 export { ACEAgent } from './integrations/simple.js';
 
