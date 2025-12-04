@@ -116,6 +116,13 @@ export function hasSentenceTransformers(): boolean {
 }
 
 /**
+ * Check if Opik observability platform is available.
+ */
+export function hasOpik(): boolean {
+  return checkImport('opik');
+}
+
+/**
  * Get a dictionary of all available features.
  *
  * @returns Object mapping feature names to availability status
@@ -138,6 +145,7 @@ export function getAvailableFeatures(): Record<string, boolean> {
     puppeteer: hasPuppeteer(),
     zod: hasZod(),
     dotenv: hasDotenv(),
+    opik: hasOpik(),
   };
 }
 

@@ -150,3 +150,14 @@ export {
   generateSimilarityReport,
   formatPairForLogging,
 } from './deduplication/index.js';
+
+// Observability system (optional - requires 'opik' package)
+export {
+  OpikIntegration,
+  configureOpik,
+  getIntegration,
+  OPIK_AVAILABLE,
+  aceTrack,
+  trackRole,
+  maybeTrack,
+} from './observability/index.js';
