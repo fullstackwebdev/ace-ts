@@ -62,6 +62,9 @@ export {
 // Simple integration class (similar to ACELiteLLM)
 export { ACEAgent } from './integrations/simple.js';
 
+// Integration utilities for external agents
+export { wrapSkillbookContext } from './integrations/base.js';
+
 // Feature detection utilities
 export {
   hasVercelAI,
