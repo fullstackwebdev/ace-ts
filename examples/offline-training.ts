@@ -5,7 +5,7 @@
  * This example trains on simple math problems to learn effective strategies.
  */
 
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { openai } from '@ai-sdk/openai';
 import {
   OfflineACE,
@@ -122,7 +122,7 @@ async function main() {
   firstSampleResults.forEach((result, epochIdx) => {
     const isCorrect = result.environmentResult.metrics?.correct === 1.0;
     const symbol = isCorrect ? '✓' : '✗';
-    const answer = result.agentOutput.finalAnswer || result.agentOutput.answer || 'N/A';
+    const answer = result.agentOutput.final_answer || 'N/A';
     console.log(`   Epoch ${epochIdx + 1}: ${symbol} ${answer.slice(0, 50)}`);
   });
 

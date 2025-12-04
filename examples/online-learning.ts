@@ -5,7 +5,7 @@
  * This simulates a production scenario where the agent learns from each interaction.
  */
 
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { openai } from '@ai-sdk/openai';
 import {
   OnlineACE,
@@ -114,7 +114,7 @@ async function main() {
   results.forEach((result, idx) => {
     const isCorrect = result.environmentResult.metrics?.correct === 1.0;
     const symbol = isCorrect ? '✅' : '❌';
-    const answer = result.agentOutput.finalAnswer || result.agentOutput.answer || 'N/A';
+    const answer = result.agentOutput.final_answer || 'N/A';
     console.log(
       `   ${idx + 1}. ${symbol} ${result.sample.question}`
     );
