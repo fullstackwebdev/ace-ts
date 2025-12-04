@@ -4,11 +4,11 @@
  */
 
 // Core exports
-export { Skillbook, Skill, SimilarityDecision, createSkill, skillToLLMDict } from './skillbook.js';
+export type { Skill, SimilarityDecision } from './skillbook.js';
+export { Skillbook, createSkill, skillToLLMDict } from './skillbook.js';
+
+export type { UpdateOperation, UpdateBatch, OperationType } from './updates.js';
 export {
-  UpdateOperation,
-  UpdateBatch,
-  OperationType,
   createUpdateOperation,
   createUpdateBatch,
   updateOperationFromJSON,
@@ -18,21 +18,19 @@ export {
 } from './updates.js';
 
 // LLM clients
+export type { LLMClient, LLMResponse } from './llm.js';
 export {
-  LLMClient,
-  LLMResponse,
   DummyLLMClient,
   VercelAIClient,
   createLLMClient,
 } from './llm.js';
 
 // Roles
+export type { AgentOutput, ReflectorOutput } from './roles.js';
 export {
   Agent,
-  AgentOutput,
   ReplayAgent,
   Reflector,
-  ReflectorOutput,
   SkillManager,
   extractCitedSkillIds,
 } from './roles.js';
@@ -47,15 +45,17 @@ export {
 } from './prompts.js';
 
 // Adaptation loops
-export {
+export type {
   Sample,
   EnvironmentResult,
   TaskEnvironment,
-  SimpleEnvironment,
   ACEStepResult,
   ACEConfig,
-  OfflineACE,
   OfflineACERunOptions,
+} from './adaptation.js';
+export {
+  SimpleEnvironment,
+  OfflineACE,
   OnlineACE,
 } from './adaptation.js';
 
