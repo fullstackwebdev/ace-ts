@@ -152,14 +152,17 @@ describe('Skillbook', () => {
 
   describe('applyUpdate', () => {
     it('should apply ADD operation', () => {
-      const batch = createUpdateBatch([
-        {
-          operation: 'ADD',
-          id: 'new-skill-001',
-          section: 'test',
-          content: 'New skill',
-        },
-      ]);
+      const batch = createUpdateBatch({
+        reasoning: 'Adding new skill',
+        operations: [
+          {
+            type: 'ADD',
+            section: 'test',
+            content: 'New skill',
+            skill_id: 'new-skill-001',
+          },
+        ],
+      });
 
       skillbook.applyUpdate(batch);
 
@@ -169,18 +172,19 @@ describe('Skillbook', () => {
     });
 
     it('should apply UPDATE operation', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Original',
-      });
+      const skill = skillbook.addSkill('test', 'Original');
 
-      const batch = createUpdateBatch([
-        {
-          operation: 'UPDATE',
-          id: skill.id,
-          content: 'Updated',
-        },
-      ]);
+      const batch = createUpdateBatch({
+        reasoning: 'Updating skill',
+        operations: [
+          {
+            type: 'UPDATE',
+            section: 'test',
+            skill_id: skill.id,
+            content: 'Updated',
+          },
+        ],
+      });
 
       skillbook.applyUpdate(batch);
 
@@ -189,20 +193,19 @@ describe('Skillbook', () => {
     });
 
     it('should apply TAG operation', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test',
-        metadata: { helpful: 5 },
-      });
+      const skill = skillbook.addSkill('test', 'Test', undefined, { helpful: 5 });
 
-      const batch = createUpdateBatch([
-        {
-          operation: 'TAG',
-          id: skill.id,
-          tag: 'helpful',
-          delta: 3,
-        },
-      ]);
+      const batch = createUpdateBatch({
+        reasoning: 'Tagging skill',
+        operations: [
+          {
+            type: 'TAG',
+            section: 'test',
+            skill_id: skill.id,
+            metadata: { helpful: 3 },
+          },
+        ],
+      });
 
       skillbook.applyUpdate(batch);
 
@@ -211,17 +214,18 @@ describe('Skillbook', () => {
     });
 
     it('should apply REMOVE operation', () => {
-      const skill = skillbook.addSkill({
-        section: 'test',
-        content: 'Test',
-      });
+      const skill = skillbook.addSkill('test', 'Test');
 
-      const batch = createUpdateBatch([
-        {
-          operation: 'REMOVE',
-          id: skill.id,
-        },
-      ]);
+      const batch = createUpdateBatch({
+        reasoning: 'Removing skill',
+        operations: [
+          {
+            type: 'REMOVE',
+            section: 'test',
+            skill_id: skill.id,
+          },
+        ],
+      });
 
       skillbook.applyUpdate(batch);
 
@@ -260,36 +264,24 @@ describe('Skillbook', () => {
     });
   });
 
-  describe('toJSON', () => {
-    it('should serialize to JSON', () => {
+  describe('dumps', () => {
+    it('should serialize to JSON string', () => {
       skillbook.addSkill('test', 'Test 1');
       skillbook.addSkill('test', 'Test 2');
 
-      const json = skillbook.toJSON();
+      const jsonStr = skillbook.dumps();
+      const json = JSON.parse(jsonStr);
 
-      expect(json.skills).toHaveLength(2);
-      expect(json.skills[0].content).toBe('Test 1');
-      expect(json.skills[1].content).toBe('Test 2');
+      expect(Object.keys(json.skills)).toHaveLength(2);
     });
   });
 
-  describe('fromJSON', () => {
-    it('should deserialize from JSON', () => {
-      const json = {
-        skills: [
-          {
-            id: 'skill-001',
-            section: 'test',
-            content: 'Test skill',
-            helpful: 5,
-            harmful: 1,
-            neutral: 0,
-            metadata: {},
-          },
-        ],
-      };
+  describe('loads', () => {
+    it('should deserialize from JSON string', () => {
+      skillbook.addSkill('test', 'Test skill', 'skill-001', { helpful: 5, harmful: 1 });
 
-      const loaded = Skillbook.fromJSON(JSON.stringify(json));
+      const jsonStr = skillbook.dumps();
+      const loaded = Skillbook.loads(jsonStr);
 
       expect(loaded.skills()).toHaveLength(1);
       const skill = loaded.getSkill('skill-001');

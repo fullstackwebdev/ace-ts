@@ -3,8 +3,6 @@
  */
 
 import {
-  UpdateOperation,
-  UpdateBatch,
   createUpdateOperation,
   updateOperationFromJSON,
   updateOperationToJSON,
