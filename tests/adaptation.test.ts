@@ -152,11 +152,7 @@ describe('OfflineACE', () => {
     };
     const environment = new SimpleQAEnvironment();
 
-    const results = await adapter.run({
-      samples: [sample],
-      environment,
-      epochs: 1,
-    });
+    const results = await adapter.run([sample], environment, { epochs: 1 });
 
     // Verify the run completed
     expect(results).toHaveLength(1);
@@ -225,11 +221,7 @@ describe('OfflineACE', () => {
     ];
     const environment = new SimpleQAEnvironment();
 
-    const results = await adapter.run({
-      samples,
-      environment,
-      epochs: 1,
-    });
+    const results = await adapter.run(samples, environment, { epochs: 1 });
 
     expect(results).toHaveLength(2);
     expect(results[0].agentOutput.final_answer).toBe('1');
@@ -284,11 +276,7 @@ describe('OfflineACE', () => {
     const samples: Sample[] = [{ question: 'Test?', groundTruth: 'answer' }];
     const environment = new SimpleQAEnvironment();
 
-    const results = await adapter.run({
-      samples,
-      environment,
-      epochs: 2,
-    });
+    const results = await adapter.run(samples, environment, { epochs: 2 });
 
     // Should have 2 results (one per epoch)
     expect(results).toHaveLength(2);
@@ -349,10 +337,7 @@ describe('OnlineACE', () => {
     ];
     const environment = new SimpleQAEnvironment();
 
-    const results = await adapter.run({
-      samples,
-      environment,
-    });
+    const results = await adapter.run(samples, environment);
 
     expect(results).toHaveLength(2);
     expect(results[0].agentOutput.final_answer).toBe('1');
@@ -440,7 +425,7 @@ describe('OnlineACE', () => {
     ];
     const environment = new SimpleQAEnvironment();
 
-    await adapter.run({ samples, environment });
+    await adapter.run(samples, environment);
 
     // Verify skillbook was updated after first sample
     const skills = skillbook.skills();

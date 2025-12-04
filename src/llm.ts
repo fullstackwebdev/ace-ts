@@ -149,13 +149,19 @@ export async function createLLMClient(params: {
       break;
     }
     case 'anthropic': {
-      const { anthropic } = await import('@ai-sdk/anthropic');
-      languageModel = anthropic(params.model, { apiKey: params.apiKey });
+      const { createAnthropic } = await import('@ai-sdk/anthropic');
+      const anthropicClient = createAnthropic({
+        apiKey: params.apiKey,
+      });
+      languageModel = anthropicClient(params.model);
       break;
     }
     case 'google': {
-      const { google } = await import('@ai-sdk/google');
-      languageModel = google(params.model, { apiKey: params.apiKey });
+      const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
+      const googleClient = createGoogleGenerativeAI({
+        apiKey: params.apiKey,
+      });
+      languageModel = googleClient(params.model);
       break;
     }
     case 'custom': {
