@@ -23,6 +23,19 @@
  * Based on patterns from GPT-5, Claude 3.5, and 80+ production prompts.
  */
 
+// Deprecation flag - only warn once when actually used
+let _deprecationWarned = false;
+
+function emitDeprecationWarning(): void {
+  if (!_deprecationWarned) {
+    console.warn(
+      "prompts_v2 is deprecated and will be removed in a future version. " +
+        "Please use prompts_v2_1 instead for enhanced performance and features.",
+    );
+    _deprecationWarned = true;
+  }
+}
+
 // ================================
 // AGENT PROMPT - VERSION 2.0
 // ================================
@@ -779,6 +792,11 @@ export class PromptManager {
 
     let prompt = PromptManager.PROMPTS.agent[promptKey];
 
+    // Emit deprecation warning for v2.0 prompts
+    if (version.startsWith("2.0")) {
+      emitDeprecationWarning();
+    }
+
     // Handle references to other modules (v1, v2.1)
     if (prompt?.startsWith("ace.")) {
       const moduleParts = prompt.split(".");
@@ -816,6 +834,11 @@ export class PromptManager {
     const ver = version || this.defaultVersion;
     let prompt = PromptManager.PROMPTS.reflector[ver];
 
+    // Emit deprecation warning for v2.0 prompts
+    if (ver.startsWith("2.0")) {
+      emitDeprecationWarning();
+    }
+
     // Handle references
     if (prompt?.startsWith("ace.")) {
       const moduleParts = prompt.split(".");
@@ -840,6 +863,11 @@ export class PromptManager {
   getSkillManagerPrompt(version?: string): string {
     const ver = version || this.defaultVersion;
     let prompt = PromptManager.PROMPTS.skill_manager[ver];
+
+    // Emit deprecation warning for v2.0 prompts
+    if (ver.startsWith("2.0")) {
+      emitDeprecationWarning();
+    }
 
     // Handle references
     if (prompt?.startsWith("ace.")) {
@@ -1015,9 +1043,3 @@ const customPrompt = AGENT_V2_PROMPT.replace(
 - Validate outputs with the provided validation utilities
 - Consider A/B testing v1 vs v2 for your use case
 `;
-
-// Emit deprecation warning
-console.warn(
-  "prompts_v2 is deprecated and will be removed in a future version. " +
-    "Please use prompts_v2_1 instead for enhanced performance and features.",
-);

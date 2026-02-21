@@ -1203,7 +1203,11 @@ export class PromptManager {
     if (typeof prompt === "string" && prompt.startsWith("ace.")) {
       const moduleParts = prompt.split(".");
       if (moduleParts.length > 2 && moduleParts[1] === "prompts_v2") {
-        // Import from prompts_v2
+        // Import from prompts_v2 and emit deprecation warning
+        console.warn(
+          "prompts_v2 is deprecated and will be removed in a future version. " +
+            "Please use prompts_v2_1 instead for enhanced performance and features.",
+        );
         const { AGENT_V2_PROMPT } = require("./prompts_v2");
         prompt = AGENT_V2_PROMPT;
       } else {
@@ -1242,6 +1246,11 @@ export class PromptManager {
     if (typeof prompt === "string" && prompt.startsWith("ace.")) {
       const moduleParts = prompt.split(".");
       if (moduleParts.length > 2 && moduleParts[1] === "prompts_v2") {
+        // Emit deprecation warning
+        console.warn(
+          "prompts_v2 is deprecated and will be removed in a future version. " +
+            "Please use prompts_v2_1 instead for enhanced performance and features.",
+        );
         const { REFLECTOR_V2_PROMPT } = require("./prompts_v2");
         prompt = REFLECTOR_V2_PROMPT;
       } else {
@@ -1272,6 +1281,11 @@ export class PromptManager {
     if (typeof prompt === "string" && prompt.startsWith("ace.")) {
       const moduleParts = prompt.split(".");
       if (moduleParts.length > 2 && moduleParts[1] === "prompts_v2") {
+        // Emit deprecation warning
+        console.warn(
+          "prompts_v2 is deprecated and will be removed in a future version. " +
+            "Please use prompts_v2_1 instead for enhanced performance and features.",
+        );
         const { SKILL_MANAGER_V2_PROMPT } = require("./prompts_v2");
         prompt = SKILL_MANAGER_V2_PROMPT;
       } else {
