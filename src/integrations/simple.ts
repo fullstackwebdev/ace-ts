@@ -2,22 +2,17 @@
  * Simple ACE integration - equivalent to ACELiteLLM in Python
  */
 
-import { LanguageModel } from "ai";
 import { Skillbook } from "../skillbook.js";
 import { Agent } from "../roles.js";
 import { Reflector } from "../roles.js";
 import { SkillManager } from "../roles.js";
-import { VercelAIClient } from "../llm.js";
+import { OpenAICompatibleClient, type OpenAICompatibleClientConfig } from "../llm.js";
 
-export interface ACEAgentConfig {
-  /** The language model to use (from Vercel AI SDK) */
-  model: LanguageModel;
+export interface ACEAgentConfig extends OpenAICompatibleClientConfig {
   /** Path to load/save skillbook */
   skillbookPath?: string;
   /** Pre-loaded skillbook instance */
   skillbook?: Skillbook;
-  /** Model options */
-  modelOptions?: any;
 }
 
 export class ACEAgent {
@@ -30,11 +25,11 @@ export class ACEAgent {
    * @example
    * ```typescript
    * import { ACEAgent } from '@kayba/ace-framework';
-   * import { openai } from '@ai-sdk/openai';
    *
-   * // Create self-improving agent
+   * // Create self-improving agent with local LLM server
    * const agent = new ACEAgent({
-   *   model: openai('gpt-4o-mini')
+   *   baseURL: "http://localhost:8080",
+   *   model: "llama-3.1-8b"
    * });
    *
    * // Ask related questions - agent learns patterns
@@ -49,11 +44,14 @@ export class ACEAgent {
    * agent.saveSkillbook("my_agent.json");
    *
    * // Load and continue
-   * const agent2 = ACEAgent.fromSkillbook("my_agent.json", openai('gpt-4o-mini'));
+   * const agent2 = ACEAgent.fromSkillbook("my_agent.json", {
+   *   baseURL: "http://localhost:8080",
+   *   model: "llama-3.1-8b"
+   * });
    * ```
    */
   public skillbook: Skillbook;
-  private llmClient: VercelAIClient;
+  private llmClient: OpenAICompatibleClient;
   private agent: Agent;
   private reflector: Reflector;
   private skillManager: SkillManager;
@@ -72,11 +70,11 @@ export class ACEAgent {
       }
     }
 
+    // Extract OpenAI client config from ACEAgentConfig
+    const { skillbook, skillbookPath, ...clientConfig } = config;
+    
     // Create LLM client
-    this.llmClient = new VercelAIClient({
-      model: config.model,
-      defaultOptions: config.modelOptions,
-    });
+    this.llmClient = new OpenAICompatibleClient(clientConfig);
 
     // Create ACE roles
     this.agent = new Agent(this.llmClient);
@@ -138,21 +136,18 @@ export class ACEAgent {
 
   static fromSkillbook(
     skillbookPath: string,
-    model: LanguageModel,
-    modelOptions?: any,
+    clientConfig: OpenAICompatibleClientConfig,
   ): ACEAgent {
     /**
      * Load an ACEAgent with a pre-trained skillbook.
      *
      * @param skillbookPath - Path to the skillbook file
-     * @param model - Language model to use
-     * @param modelOptions - Optional model configuration
+     * @param clientConfig - OpenAI-compatible client configuration
      * @returns ACEAgent instance with loaded skillbook
      */
     return new ACEAgent({
-      model,
+      ...clientConfig,
       skillbookPath,
-      modelOptions,
     });
   }
 

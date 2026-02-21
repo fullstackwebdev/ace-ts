@@ -366,11 +366,13 @@ export interface OfflineACERunOptions {
  *
  * @example
  * ```typescript
- * import { OfflineACE, Agent, Reflector, SkillManager, Sample } from 'ace-ts';
- * import { VercelAIClient } from 'ace-ts';
+ * import { OfflineACE, Agent, Reflector, SkillManager, Sample, OpenAICompatibleClient } from 'ace-ts';
  *
  * // Initialize components with same LLM
- * const client = new VercelAIClient({ model: 'gpt-4' });
+ * const client = new OpenAICompatibleClient({
+ *   baseURL: "http://localhost:8080",
+ *   model: "llama-3.1-8b"
+ * });
  * const agent = new Agent(client);
  * const reflector = new Reflector(client);
  * const skillManager = new SkillManager(client);
@@ -504,13 +506,15 @@ export class OfflineACE extends ACEBase {
  *
  * @example
  * ```typescript
- * import { OnlineACE, Agent, Reflector, SkillManager, Skillbook } from 'ace-ts';
- * import { VercelAIClient } from 'ace-ts';
+ * import { OnlineACE, Agent, Reflector, SkillManager, Skillbook, OpenAICompatibleClient } from 'ace-ts';
  *
  * // Initialize with pre-trained skillbook
  * const skillbook = await Skillbook.loadFromFile("pretrained_skillbook.json");
  *
- * const client = new VercelAIClient({ model: 'gpt-4' });
+ * const client = new OpenAICompatibleClient({
+ *   baseURL: "http://localhost:8080",
+ *   model: "llama-3.1-8b"
+ * });
  * const ace = new OnlineACE({
  *   skillbook,
  *   agent: new Agent(client),

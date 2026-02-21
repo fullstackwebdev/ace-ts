@@ -44,12 +44,14 @@
  *
  * ```typescript
  * import { wrapSkillbookContext } from '@kayba/ace-framework/integrations/base';
- * import { Skillbook, Reflector, SkillManager, VercelAIClient } from '@kayba/ace-framework';
- * import { openai } from '@ai-sdk/openai';
+ * import { Skillbook, Reflector, SkillManager, OpenAICompatibleClient } from '@kayba/ace-framework';
  *
  * // Setup
  * const skillbook = new Skillbook();
- * const llmClient = new VercelAIClient({ model: openai('gpt-4o-mini') });
+ * const llmClient = new OpenAICompatibleClient({
+ *   baseURL: "http://localhost:8080",
+ *   model: "llama-3.1-8b"
+ * });
  * const reflector = new Reflector(llmClient);
  * const skillManager = new SkillManager(llmClient);
  *

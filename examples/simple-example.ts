@@ -6,21 +6,21 @@
  * - Asking questions
  * - Automatic learning from interactions
  * - Saving and loading learned knowledge
+ *
+ * Prerequisites:
+ * - Running LLM server with OpenAI-compatible API (e.g., llama.cpp, Ollama, vLLM)
+ * - Server running at http://localhost:8080
  */
 
 import { ACEAgent } from "../src/index.js";
-import { openai } from "@ai-sdk/openai";
-import * as dotenv from "dotenv";
-
-// Load environment variables
-dotenv.config();
 
 async function main() {
   console.log("=== ACE Framework Simple Example ===\n");
 
-  // Create self-improving agent
+  // Create self-improving agent with local LLM server
   const agent = new ACEAgent({
-    model: openai("gpt-4o-mini"),
+    baseURL: "http://localhost:8080",
+    model: "llama-3.1-8b",
   });
 
   console.log("Agent created. Starting Q&A session...\n");
@@ -62,7 +62,10 @@ async function main() {
   console.log("Loading skillbook from file...");
   const agent2 = ACEAgent.fromSkillbook(
     "trained-agent.json",
-    openai("gpt-4o-mini"),
+    {
+      baseURL: "http://localhost:8080",
+      model: "llama-3.1-8b",
+    },
   );
   console.log(`Loaded agent has ${agent2.getStats().skills} skills\n`);
 

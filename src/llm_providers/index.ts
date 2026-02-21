@@ -1,10 +1,10 @@
 /**
  * LLM provider implementations for ACE Framework.
- * TypeScript ports of Python's llm_providers module.
+ * OpenAI-compatible HTTP client for any compliant API server.
  */
 
 export {
-  VercelAIClient,
-  type VercelAIConfig,
-  createVercelAIClient,
-} from "./vercel_ai_client.js";
+  OpenAICompatibleClient,
+  type OpenAICompatibleClientConfig,
+  createLLMClient,
+} from "./openai_compatible_client.js";

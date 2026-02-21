@@ -3,10 +3,12 @@
  *
  * Demonstrates how to use OfflineACE to train a skillbook over multiple epochs.
  * This example trains on simple math problems to learn effective strategies.
+ *
+ * Prerequisites:
+ * - Running LLM server with OpenAI-compatible API (e.g., llama.cpp, Ollama, vLLM)
+ * - Server running at http://localhost:8080
  */
 
-import * as dotenv from "dotenv";
-import { openai } from "@ai-sdk/openai";
 import {
   OfflineACE,
   Agent,
@@ -14,18 +16,16 @@ import {
   SkillManager,
   SimpleEnvironment,
   Sample,
-  VercelAIClient,
+  OpenAICompatibleClient,
 } from "../src/index.js";
-
-// Load environment variables
-dotenv.config();
 
 async function main() {
   console.log("🎓 ACE Framework - Offline Training Example\n");
 
   // Initialize LLM client (shared by all roles)
-  const llmClient = new VercelAIClient({
-    model: openai("gpt-4o-mini"),
+  const llmClient = new OpenAICompatibleClient({
+    baseURL: "http://localhost:8080",
+    model: "llama-3.1-8b",
   });
 
   // Create the three ACE roles

@@ -3,14 +3,13 @@
  *
  * A challenge where LLMs often hallucinate that a seahorse emoji exists (it doesn't).
  * This demonstrates ACE's ability to learn from mistakes and self-correct.
+ *
+ * Prerequisites:
+ * - Running LLM server with OpenAI-compatible API (e.g., llama.cpp, Ollama, vLLM)
+ * - Server running at http://localhost:8080
  */
 
 import { ACEAgent } from "../src/index.js";
-import { openai } from "@ai-sdk/openai";
-import * as dotenv from "dotenv";
-
-// Load environment variables
-dotenv.config();
 
 async function main() {
   console.log("=== Seahorse Emoji Challenge ===\n");
@@ -20,7 +19,8 @@ async function main() {
 
   // Create agent
   const agent = new ACEAgent({
-    model: openai("gpt-4o-mini"),
+    baseURL: "http://localhost:8080",
+    model: "llama-3.1-8b",
   });
 
   // Round 1: Ask about seahorse emoji

@@ -116,10 +116,12 @@ export class Agent {
    *
    * @example
    * ```typescript
-   * import { Agent, VercelAIClient, Skillbook } from './index.js';
-   * import { openai } from '@ai-sdk/openai';
+   * import { Agent, OpenAICompatibleClient, Skillbook } from './index.js';
    *
-   * const client = new VercelAIClient({ model: openai('gpt-3.5-turbo') });
+   * const client = new OpenAICompatibleClient({
+   *   baseURL: "http://localhost:8080",
+   *   model: "llama-3.1-8b"
+   * });
    * const agent = new Agent(client);
    * const skillbook = new Skillbook();
    *

@@ -19,7 +19,12 @@ export {
 
 // LLM clients
 export type { LLMClient, LLMResponse } from "./llm.js";
-export { DummyLLMClient, VercelAIClient, createLLMClient } from "./llm.js";
+export {
+  DummyLLMClient,
+  OpenAICompatibleClient,
+  createLLMClient,
+  type OpenAICompatibleClientConfig,
+} from "./llm.js";
 
 // Roles
 export type { AgentOutput, ReflectorOutput } from "./roles.js";
@@ -101,11 +106,10 @@ export { ACEAgent } from "./integrations/simple.js";
 // Integration utilities for external agents
 export { wrapSkillbookContext } from "./integrations/base.js";
 
-// LLM Provider implementations
-export type { VercelAIConfig } from "./llm_providers/index.js";
+// LLM Provider implementations (re-exports for organized imports)
 export {
-  VercelAIClient as VercelAIProviderClient,
-  createVercelAIClient,
+  OpenAICompatibleClient as OpenAIProviderClient,
+  createLLMClient as createProviderClient,
 } from "./llm_providers/index.js";
 
 // Feature detection utilities
