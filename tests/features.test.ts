@@ -3,7 +3,6 @@
  */
 
 import {
-  hasVercelAI,
   hasOpenAI,
   hasAnthropic,
   hasGoogleAI,
@@ -24,13 +23,6 @@ describe("Features Module", () => {
   });
 
   describe("Individual feature checks", () => {
-    test("hasVercelAI should check for ai package", () => {
-      const result = hasVercelAI();
-      expect(typeof result).toBe("boolean");
-      // We know 'ai' is installed in this project
-      expect(result).toBe(true);
-    });
-
     test("hasOpenAI should check for openai package", () => {
       const result = hasOpenAI();
       expect(typeof result).toBe("boolean");
@@ -77,22 +69,22 @@ describe("Features Module", () => {
   describe("Feature caching", () => {
     test("should cache feature check results", () => {
       // First call
-      const result1 = hasVercelAI();
+      const result1 = hasOpenAI();
       // Second call should use cache
-      const result2 = hasVercelAI();
+      const result2 = hasOpenAI();
       expect(result1).toBe(result2);
     });
 
     test("should clear cache when clearFeatureCache is called", () => {
       // Populate cache
-      hasVercelAI();
+      hasOpenAI();
       hasZod();
 
       // Clear cache
       clearFeatureCache();
 
       // Should still work after clearing
-      const result = hasVercelAI();
+      const result = hasOpenAI();
       expect(typeof result).toBe("boolean");
     });
   });
@@ -101,7 +93,6 @@ describe("Features Module", () => {
     test("should return object with all feature checks", () => {
       const features = getAvailableFeatures();
 
-      expect(features).toHaveProperty("vercelAI");
       expect(features).toHaveProperty("openai");
       expect(features).toHaveProperty("anthropic");
       expect(features).toHaveProperty("googleAI");
@@ -123,8 +114,7 @@ describe("Features Module", () => {
     test("should include known installed packages", () => {
       const features = getAvailableFeatures();
 
-      // We know these are installed in this project
-      expect(features.vercelAI).toBe(true);
+      // We know zod is installed in this project
       expect(features.zod).toBe(true);
     });
   });
@@ -173,7 +163,7 @@ describe("Features Module", () => {
       clearFeatureCache();
       clearFeatureCache();
 
-      const result = hasVercelAI();
+      const result = hasOpenAI();
       expect(typeof result).toBe("boolean");
     });
   });

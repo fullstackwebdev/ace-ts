@@ -114,7 +114,6 @@ export {
 
 // Feature detection utilities
 export {
-  hasVercelAI,
   hasOpenAI,
   hasAnthropic,
   hasGoogleAI,

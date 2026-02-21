@@ -35,10 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Feature Detection**: Graceful degradation for optional dependencies
 
 #### LLM Integration
-- **Vercel AI SDK Client**: Multi-provider support (OpenAI, Anthropic, Google, etc.)
+- **OpenAI-Compatible Client**: Works with any OpenAI-compatible API (llama.cpp, Ollama, vLLM, OpenAI)
 - **Structured Output**: Zod schema validation for reliable JSON parsing
-- **Retry Logic**: Automatic retry with custom prompts for parsing failures
-- **Provider Flexibility**: Easy switching between LLM providers
+- **HTTP Client**: Simple fetch-based client with no SDK dependencies
+- **Provider Flexibility**: Easy switching between local and cloud providers
 
 #### Developer Experience
 - **TypeScript Support**: Full type safety with strict mode enabled
@@ -66,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 #### Architecture
-- **LLM Provider**: Uses Vercel AI SDK instead of Python's LiteLLM
+- **LLM Provider**: Uses OpenAI-compatible HTTP client instead of Python's LiteLLM
 - **Type System**: Zod schemas for validation instead of Pydantic
 - **Serialization**: JSON format for skillbooks (removed TOON format for simplicity)
 - **Async Patterns**: Native TypeScript async/await throughout
@@ -87,8 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Bundle Size**: ~200KB minified (production build)
 
 #### Dependencies
-- **Runtime**: ai (Vercel AI SDK), zod
-- **Peer**: @ai-sdk/openai, @ai-sdk/anthropic, @ai-sdk/google (optional)
+- **Runtime**: zod
 - **Dev**: typescript, jest, ts-jest, dotenv, prettier, eslint
 
 #### Quality Metrics

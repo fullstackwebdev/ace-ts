@@ -6,10 +6,10 @@
  *
  * @example
  * ```typescript
- * import { hasVercelAI, hasOpenAI, getAvailableFeatures } from './features';
+ * import { hasOpenAI, getAvailableFeatures } from './features';
  *
- * if (hasVercelAI()) {
- *   // Use Vercel AI SDK features
+ * if (hasOpenAI()) {
+ *   // Use OpenAI API features
  * }
  * ```
  */
@@ -35,13 +35,6 @@ function checkImport(_moduleName: string): boolean {
   // Real implementation would need async import() or createRequire with import.meta.url
   // which has compatibility issues across different module systems
   return true;
-}
-
-/**
- * Check if Vercel AI SDK is available.
- */
-export function hasVercelAI(): boolean {
-  return checkImport("ai");
 }
 
 /**
@@ -131,12 +124,11 @@ export function hasOpik(): boolean {
  * ```typescript
  * const features = getAvailableFeatures();
  * console.log(features);
- * // { vercelAI: true, openai: true, langchain: false, ... }
+ * // { openai: true, anthropic: false, langchain: false, ... }
  * ```
  */
 export function getAvailableFeatures(): Record<string, boolean> {
   return {
-    vercelAI: hasVercelAI(),
     openai: hasOpenAI(),
     anthropic: hasAnthropic(),
     googleAI: hasGoogleAI(),

@@ -3,7 +3,7 @@
  */
 
 import type { Skill, Skillbook } from "../skillbook.js";
-import { hasVercelAI, hasNumpy, hasSentenceTransformers } from "../features.js";
+import { hasNumpy, hasSentenceTransformers } from "../features.js";
 import type { DeduplicationConfig } from "./config.js";
 import { createDeduplicationConfig } from "./config.js";
 
@@ -34,8 +34,8 @@ export class SimilarityDetector {
      * Returns:
      *   Embedding vector as array of numbers, or null if embedding fails
      */
-    if (this.config.embeddingProvider === "vercel-ai") {
-      return this._computeEmbeddingVercelAI(text);
+    if (this.config.embeddingProvider === "openai-compatible") {
+      return this._computeEmbeddingOpenAI(text);
     } else {
       return this._computeEmbeddingSentenceTransformers(text);
     }
@@ -57,69 +57,35 @@ export class SimilarityDetector {
       return [];
     }
 
-    if (this.config.embeddingProvider === "vercel-ai") {
-      return this._computeEmbeddingsBatchVercelAI(texts);
+    if (this.config.embeddingProvider === "openai-compatible") {
+      return this._computeEmbeddingsBatchOpenAI(texts);
     } else {
       return this._computeEmbeddingsBatchSentenceTransformers(texts);
     }
   }
 
-  private async _computeEmbeddingVercelAI(
-    text: string,
+  private async _computeEmbeddingOpenAI(
+    _text: string,
   ): Promise<number[] | null> {
     /**
-     * Compute embedding using Vercel AI SDK.
+     * Compute embedding using OpenAI-compatible API.
      */
-    if (!hasVercelAI()) {
-      logger.warning("Vercel AI SDK not available for embeddings");
-      return null;
-    }
-
-    try {
-      const { embed } = await import("ai");
-      const { openai } = await import("@ai-sdk/openai");
-
-      const model = openai.embedding(this.config.embeddingModel);
-      const result = await embed({
-        model,
-        value: text,
-      });
-
-      return result.embedding;
-    } catch (e: any) {
-      logger.warning(`Failed to compute embedding via Vercel AI: ${e.message}`);
-      return null;
-    }
+    // Note: Embeddings require a separate embedding model endpoint
+    // This is a placeholder - in practice, use a dedicated embedding service
+    logger.warning("OpenAI-compatible embeddings not yet implemented");
+    return null;
   }
 
-  private async _computeEmbeddingsBatchVercelAI(
-    texts: string[],
+  private async _computeEmbeddingsBatchOpenAI(
+    _texts: string[],
   ): Promise<Array<number[] | null>> {
     /**
-     * Batch compute embeddings using Vercel AI SDK.
+     * Batch compute embeddings using OpenAI-compatible API.
      */
-    if (!hasVercelAI()) {
-      logger.warning("Vercel AI SDK not available for embeddings");
-      return texts.map(() => null);
-    }
-
-    try {
-      const { embedMany } = await import("ai");
-      const { openai } = await import("@ai-sdk/openai");
-
-      const model = openai.embedding(this.config.embeddingModel);
-      const result = await embedMany({
-        model,
-        values: texts,
-      });
-
-      return result.embeddings;
-    } catch (e: any) {
-      logger.warning(
-        `Failed to compute batch embeddings via Vercel AI: ${e.message}`,
-      );
-      return texts.map(() => null);
-    }
+    // Note: Embeddings require a separate embedding model endpoint
+    // This is a placeholder - in practice, use a dedicated embedding service
+    logger.warning("OpenAI-compatible batch embeddings not yet implemented");
+    return _texts.map(() => null);
   }
 
   private async _computeEmbeddingSentenceTransformers(

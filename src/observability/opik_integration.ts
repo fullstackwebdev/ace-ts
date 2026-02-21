@@ -312,46 +312,10 @@ export class OpikIntegration {
   }
 
   /**
-   * Set up Vercel AI SDK callback for automatic token and cost tracking.
-   *
-   * Note: TypeScript version doesn't have direct LiteLLM integration.
-   * This method is a placeholder for future Vercel AI SDK integration.
-   *
-   * @returns True if callback was successfully configured, false otherwise
-   */
-  setupVercelAICallback(): boolean {
-    if (!this.enabled) {
-      return false;
-    }
-
-    try {
-      // Vercel AI SDK has built-in telemetry support
-      // This would require custom middleware integration
-      console.info(
-        "Vercel AI SDK callback setup - requires custom telemetry middleware",
-      );
-      return true;
-    } catch (e) {
-      console.error(
-        `Failed to setup Vercel AI callback: ${e instanceof Error ? e.message : String(e)}`,
-      );
-      return false;
-    }
-  }
-
-  /**
    * Check if Opik integration is available and configured.
    */
   isAvailable(): boolean {
     return this.enabled;
-  }
-
-  /**
-   * Check if Vercel AI integration is available.
-   */
-  isVercelAIIntegrationAvailable(): boolean {
-    // Placeholder - would need to check for Vercel AI SDK
-    return false;
   }
 
   /**

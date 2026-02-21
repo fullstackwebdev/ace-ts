@@ -2,7 +2,7 @@
  * Configuration for skill deduplication.
  */
 
-export type EmbeddingProvider = "vercel-ai" | "sentence-transformers";
+export type EmbeddingProvider = "openai-compatible" | "sentence-transformers";
 
 export interface DeduplicationConfig {
   /**
@@ -10,7 +10,7 @@ export interface DeduplicationConfig {
    *
    * @property enabled - Whether deduplication is enabled (default: true)
    * @property embeddingModel - Model to use for computing embeddings
-   * @property embeddingProvider - Provider for embeddings ('vercel-ai' or 'sentence-transformers')
+   * @property embeddingProvider - Provider for embeddings ('openai-compatible' or 'sentence-transformers')
    * @property similarityThreshold - Minimum similarity score to consider skills as similar
    * @property minPairsToReport - Minimum number of similar pairs before including in SkillManager prompt
    * @property withinSectionOnly - If true, only compare skills within the same section
@@ -43,7 +43,7 @@ export function createDeduplicationConfig(
   return {
     enabled: true,
     embeddingModel: "text-embedding-3-small",
-    embeddingProvider: "vercel-ai",
+    embeddingProvider: "openai-compatible",
     similarityThreshold: 0.85,
     minPairsToReport: 1,
     withinSectionOnly: true,

@@ -4,7 +4,7 @@
 
 TypeScript port of the Agentic Context Engine (ACE) framework. Build self-improving AI agents that learn from experience.
 
-> This is a TypeScript port of the [Python ACE framework](https://github.com/kayba-ai/agentic-context-engine) using Vercel AI SDK instead of LiteLLM.
+> This is a TypeScript port of the [Python ACE framework](https://github.com/kayba-ai/agentic-context-engine) using OpenAI-compatible HTTP client instead of LiteLLM.
 
 ## Features
 
@@ -12,25 +12,25 @@ TypeScript port of the Agentic Context Engine (ACE) framework. Build self-improv
 - 📈 **Proven Results**: 20-35% better performance on complex tasks
 - 🔄 **No Fine-tuning**: Learn in-context through iterative updates
 - ⚡ **Type-Safe**: Full TypeScript support with strict typing
-- 🚀 **Multi-Provider**: Works with OpenAI, Anthropic, Google, and more (via Vercel AI SDK)
+- 🚀 **Multi-Provider**: Works with any OpenAI-compatible API (llama.cpp, Ollama, vLLM, OpenAI, etc.)
 
 ## Quick Start
 
 ### Installation
 
 ```bash
-npm install @kayba/ace-framework @ai-sdk/openai ai zod
+npm install @kayba/ace-framework zod
 ```
 
 ### Basic Usage
 
 ```typescript
 import { ACEAgent } from '@kayba/ace-framework';
-import { openai } from '@ai-sdk/openai';
 
-// Create self-improving agent
+// Create self-improving agent with local LLM server
 const agent = new ACEAgent({
-  model: openai('gpt-4o-mini')
+  baseURL: "http://localhost:8080",
+  model: "llama-3.1-8b"
 });
 
 // Ask questions - agent learns automatically
@@ -56,7 +56,7 @@ All three roles use the same base LLM with different specialized prompts.
 
 ## Key Differences from Python Version
 
-- **LLM Provider**: Uses Vercel AI SDK instead of LiteLLM
+- **LLM Provider**: Uses OpenAI-compatible HTTP client instead of LiteLLM
 - **Type System**: Full TypeScript with Zod schemas instead of Pydantic
 - **JSON Format**: Uses JSON instead of TOON for skillbook serialization
 - **Async/Await**: All operations are async (native TypeScript patterns)
@@ -134,20 +134,33 @@ console.log(skillbook.stats());
 
 ## Supported LLM Providers
 
-Via Vercel AI SDK:
+Works with any OpenAI-compatible API:
 
 ```typescript
-// OpenAI
-import { openai } from '@ai-sdk/openai';
-const agent = new ACEAgent({ model: openai('gpt-4') });
+// Local llama.cpp server
+const agent = new ACEAgent({
+  baseURL: "http://localhost:8080",
+  model: "llama-3.1-8b"
+});
 
-// Anthropic
-import { anthropic } from '@ai-sdk/anthropic';
-const agent = new ACEAgent({ model: anthropic('claude-3-5-sonnet-20241022') });
+// Ollama
+const agent = new ACEAgent({
+  baseURL: "http://localhost:11434/v1",
+  model: "llama3.1"
+});
 
-// Google
-import { google } from '@ai-sdk/google';
-const agent = new ACEAgent({ model: google('gemini-2.0-flash-exp') });
+// OpenAI API
+const agent = new ACEAgent({
+  baseURL: "https://api.openai.com/v1",
+  model: "gpt-4",
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// vLLM
+const agent = new ACEAgent({
+  baseURL: "http://localhost:5000/v1",
+  model: "meta-llama/Llama-3.1-8B"
+});
 ```
 
 ## Training & Adaptation
@@ -269,7 +282,7 @@ src/
 ├── index.ts              # Main exports
 ├── skillbook.ts          # Skillbook storage and CRUD
 ├── updates.ts            # Update operations (ADD, UPDATE, TAG, REMOVE)
-├── llm.ts               # LLM client interface (Vercel AI SDK)
+├── llm.ts               # LLM client interface (OpenAI-compatible HTTP)
 ├── roles.ts             # Agent, Reflector, SkillManager
 ├── prompts.ts           # Prompt templates (v2.1)
 ├── adaptation.ts        # OfflineACE, OnlineACE training loops
